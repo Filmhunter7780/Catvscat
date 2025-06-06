@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
     <style>
+        /* Стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -519,15 +520,26 @@
             });
         }
         
-        // Загрузить новую пару кошек
+        // Загрузить новую пару кошек (с фильтром по смешным котам)
         function loadNewPair() {
             showLoader();
             
-            // Получаем двух случайных кошек из TheCatAPI
+            // Получаем двух случайных смешных кошек из TheCatAPI
             Promise.all([
-                fetch(`${CAT_API_URL}?limit=1&api_key=${CAT_API_KEY}`).then(res => res.json()),
-                fetch(`${CAT_API_URL}?limit=1&api_key=${CAT_API_KEY}`).then(res => res.json())
+                fetch(`${CAT_API_URL}?limit=1&tags=funny&api_key=${CAT_API_KEY}`).then(res => res.json()),
+                fetch(`${CAT_API_URL}?limit=1&tags=funny&api_key=${CAT_API_KEY}`).then(res => res.json())
             ])
+            .then(([cat1Data, cat2Data]) => {
+                // Если API вернуло пустой результат для одного из котов, пробуем загрузить обычного кота
+                if (cat1Data.length === 0 || cat2Data.length === 0) {
+                    console.log("Не найдено смешных котов, загружаем обычных...");
+                    return Promise.all([
+                        cat1Data.length > 0 ? Promise.resolve(cat1Data) : fetch(`${CAT_API_URL}?limit=1&api_key=${CAT_API_KEY}`).then(res => res.json()),
+                        cat2Data.length > 0 ? Promise.resolve(cat2Data) : fetch(`${CAT_API_URL}?limit=1&api_key=${CAT_API_KEY}`).then(res => res.json())
+                    ]);
+                }
+                return [cat1Data, cat2Data];
+            })
             .then(([cat1Data, cat2Data]) => {
                 if (cat1Data.length > 0 && cat2Data.length > 0) {
                     currentCat1 = {
