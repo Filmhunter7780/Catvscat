@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatVsCat - Кто круче?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+            background-image: url('https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: multiply;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            display: none;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #6a3093;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        header {
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            padding: 20px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #5a3e51;
+            font-weight: 600;
+        }
+        
+        .vs-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+        }
+        
+        .cats-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            gap: 20px;
+            padding: 10px 0;
+        }
+        
+        .cat-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            width: 45%;
+            max-width: 400px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .cat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .cat-image {
+            width: 100%;
+            height: 280px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .vote-section {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f9f7ff;
+        }
+        
+        .vote-btn {
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin-top: 5px;
+            box-shadow: 0 4px 12px rgba(110, 142, 251, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .vote-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 16px rgba(110, 142, 251, 0.5);
+        }
+        
+        .vote-btn:active {
+            transform: scale(0.97);
+        }
+        
+        .vote-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .vs-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+        }
+        
+        .vs-circle {
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            padding: 10px 0;
+        }
+        
+        .stat-box {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            min-width: 160px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6a3093;
+            margin: 8px 0;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #777;
+        }
+        
+        .leaderboard {
+            padding: 25px;
+            background: #f0edff;
+            margin-top: 20px;
+        }
+        
+        .leaderboard h2 {
+            text-align: center;
+            color: #6a3093;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .top-cats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .top-cat {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 160px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s;
+        }
+        
+        .top-cat:hover {
+            transform: translateY(-4px);
+        }
+        
+        .top-cat-image {
+            height: 130px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .top-cat-info {
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .top-cat-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #6a3093;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .top-cat-votes {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .rank-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: gold;
+            color: #333;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+        }
+        
+        .progress-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 15px auto;
+            background: #e0e0e0;
+            border-radius: 8px;
+            height: 16px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            border-radius: 8px;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+        
+        .instructions {
+            padding: 15px;
+            text-align: center;
+            background: #f9f7ff;
+            border-top: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        
+        footer {
+            background: linear-gradient(to right, #6a3093, #a044ff);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .cats-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 25px;
+            }
+            
+            .cat-card {
+                width: 90%;
+                max-width: 350px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .vs-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+            
+            .cat-image {
+                height: 240px;
+            }
+            
+            .stats {
+                gap: 12px;
+            }
+            
+            .stat-box {
+                min-width: 140px;
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">Ваш голос учтён!</div>
+    
+    <div class="container">
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>Загружаем котиков...</p>
+        </div>
+        
+        <header>
+            <div class="logo">
+                <i class="fas fa-cat fa-2x"></i>
+                <h1>CatVsCat</h1>
+                <i class="fas fa-cat fa-2x"></i>
+            </div>
+            <p class="tagline">Кто круче? Решай сейчас!</p>
+        </header>
+        
+        <div class="vs-container">
+            <div class="cats-row">
+                <div class="cat-card">
+                    <div class="cat-image" id="cat1-image"></div>
+                    <div class="vote-section">
+                        <button class="vote-btn" id="vote-btn1" onclick="vote(1)"><i class="fas fa-heart"></i> Нравится</button>
+                    </div>
+                </div>
+                
+                <div class="vs-text">
+                    <div class="vs-circle">VS</div>
+                </div>
+                
+                <div class="cat-card">
+                    <div class="cat-image" id="cat2-image"></div>
+                    <div class="vote-section">
+                        <button class="vote-btn" id="vote-btn2" onclick="vote(2)"><i class="fas fa-heart"></i> Нравится</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="total-votes">0</div>
+                    <div class="stat-label">Всего голосов</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="cats-compared">0</div>
+                    <div class="stat-label">Сравнений</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> Как это работает?</h3>
+            <p>Выберите, какой котик вам нравится больше. После выбора автоматически загрузится следующая пара. Котик с наибольшим количеством голосов побеждает!</p>
+        </div>
+        
+        <div class="leaderboard">
+            <h2><i class="fas fa-trophy"></i> Топ котиков</h2>
+            <div class="top-cats" id="top-cats">
+                <div class="top-cat">
+                    <div class="rank-badge">1</div>
+                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/0XYvRd7oD.jpg');"></div>
+                    <div class="top-cat-info">
+                        <div class="top-cat-name">Загрузка...</div>
+                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
+                    </div>
+                </div>
+                <div class="top-cat">
+                    <div class="rank-badge">2</div>
+                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/1q8mFkACz.jpg');"></div>
+                    <div class="top-cat-info">
+                        <div class="top-cat-name">Загрузка...</div>
+                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
+                    </div>
+                </div>
+                <div class="top-cat">
+                    <div class="rank-badge">3</div>
+                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/3kj7DfzVd.jpg');"></div>
+                    <div class="top-cat-info">
+                        <div class="top-cat-name">Загрузка...</div>
+                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
+                    </div>
+                </div>
+                <div class="top-cat">
+                    <div class="rank-badge">4</div>
+                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/71jUbx_3i.jpg');"></div>
+                    <div class="top-cat-info">
+                        <div class="top-cat-name">Загрузка...</div>
+                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
+                    </div>
+                </div>
+                <div class="top-cat">
+                    <div class="rank-badge">5</div>
+                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/a96.jpg');"></div>
+                    <div class="top-cat-info">
+                        <div class="top-cat-name">Загрузка...</div>
+                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>CatVsCat © 2023 | Проголосуй за самого крутого кота!</p>
+            <p>Следующая пара котиков загружается автоматически после голосования</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1x3B5j_2V3u5gR5dI7H3zJqkf5z7Xe5A",
+            authDomain: "catvscat-8d7b3.firebaseapp.com",
+            projectId: "catvscat-8d7b3",
+            storageBucket: "catvscat-8d7b3.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890abcdef"
+        };
+        
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        firebase.analytics();
+        
+        // API ключ для TheCatAPI
+        const CAT_API_KEY = 'live_1PCe2EXUm0kXZAa3wB1aqTgdvWwQBONQHxhpzq8gmbXfFvSFCS9YyQ1jYT3sz6jG';
+        const CAT_API_URL = 'https://api.thecatapi.com/v1/images/search';
+        
+        // Текущие кошки для сравнения
+        let currentCat1 = null;
+        let currentCat2 = null;
+        let totalVotes = 0;
+        let comparisons = 0;
+        
+        // Инициализация приложения
+        function initApp() {
+            showLoader();
+            loadStats();
+            loadTopCats();
+            loadNewPair();
+        }
+        
+        // Показать загрузчик
+        function showLoader() {
+            document.getElementById('loader').style.display = 'flex';
+        }
+        
+        // Скрыть загрузчик
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+        
+        // Показать уведомление
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Загрузить статистику
+        function loadStats() {
+            db.collection("stats").doc("global").get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    totalVotes = data.totalVotes || 0;
+                    comparisons = data.comparisons || 0;
+                    updateStats();
+                }
+            })
+            .catch((error) => {
+                console.log("Ошибка загрузки статистики:", error);
+            });
+        }
+        
+        // Обновить статистику
+        function updateStats() {
+            document.getElementById('total-votes').textContent = totalVotes;
+            document.getElementById('cats-compared').textContent = comparisons;
+            
+            // Сохраняем в Firebase
+            db.collection("stats").doc("global").set({
+                totalVotes: totalVotes,
+                comparisons: comparisons
+            }, { merge: true })
+            .catch((error) => {
+                console.log("Ошибка сохранения статистики:", error);
+            });
+        }
+        
+        // Загрузить новую пару кошек
+        function loadNewPair() {
+            showLoader();
+            
+            // Получаем двух случайных кошек из TheCatAPI
+            Promise.all([
+                fetch(`${CAT_API_URL}?limit=1&api_key=${CAT_API_KEY}`).then(res => res.json()),
+                fetch(`${CAT_API_URL}?limit=1&api_key=${CAT_API_KEY}`).then(res => res.json())
+            ])
+            .then(([cat1Data, cat2Data]) => {
+                if (cat1Data.length > 0 && cat2Data.length > 0) {
+                    currentCat1 = {
+                        id: cat1Data[0].id,
+                        url: cat1Data[0].url,
+                        votes: 0
+                    };
+                    
+                    currentCat2 = {
+                        id: cat2Data[0].id,
+                        url: cat2Data[0].url,
+                        votes: 0
+                    };
+                    
+                    // Обновляем интерфейс
+                    document.getElementById('cat1-image').style.backgroundImage = `url('${currentCat1.url}')`;
+                    document.getElementById('cat2-image').style.backgroundImage = `url('${currentCat2.url}')`;
+                    
+                    // Включаем кнопки
+                    document.getElementById('vote-btn1').disabled = false;
+                    document.getElementById('vote-btn2').disabled = false;
+                    
+                    updateStats();
+                    hideLoader();
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки кошек:', error);
+                hideLoader();
+                
+                // Резервные кошки
+                document.getElementById('cat1-image').style.backgroundImage = `url('https://cdn2.thecatapi.com/images/0XYvRd7oD.jpg')`;
+                document.getElementById('cat2-image').style.backgroundImage = `url('https://cdn2.thecatapi.com/images/1q8mFkACz.jpg')`;
+                
+                currentCat1 = {id: 'backup1', votes: 0};
+                currentCat2 = {id: 'backup2', votes: 0};
+                
+                // Включаем кнопки
+                document.getElementById('vote-btn1').disabled = false;
+                document.getElementById('vote-btn2').disabled = false;
+            });
+        }
+        
+        // Голосование за кошку
+        function vote(catNumber) {
+            const votedCat = catNumber === 1 ? currentCat1 : currentCat2;
+            
+            // Отключаем кнопки во время обработки
+            document.getElementById('vote-btn1').disabled = true;
+            document.getElementById('vote-btn2').disabled = true;
+            
+            // Обновляем данные
+            votedCat.votes += 1;
+            totalVotes += 1;
+            comparisons += 1;
+            
+            // Обновляем статистику
+            updateStats();
+            
+            // Обновляем прогресс бар
+            document.getElementById('progress-bar').style.width = '100%';
+            
+            // Сохраняем голос в Firebase
+            db.collection("cats").doc(votedCat.id).set({
+                url: votedCat.url,
+                votes: firebase.firestore.FieldValue.increment(1)
+            }, { merge: true })
+            .then(() => {
+                console.log("Голос успешно записан!");
+                showNotification("Ваш голос учтён!");
+            })
+            .catch((error) => {
+                console.error("Ошибка записи голоса: ", error);
+                showNotification("Ошибка при сохранении голоса");
+            });
+            
+            // Задержка перед загрузкой новой пары
+            setTimeout(() => {
+                document.getElementById('progress-bar').style.width = '0%';
+                loadNewPair();
+                loadTopCats();
+            }, 700);
+        }
+        
+        // Загрузка топ-котиков
+        function loadTopCats() {
+            db.collection("cats")
+                .orderBy("votes", "desc")
+                .limit(5)
+                .get()
+                .then((querySnapshot) => {
+                    const topCatsContainer = document.getElementById('top-cats');
+                    const topCatsElements = topCatsContainer.querySelectorAll('.top-cat');
+                    
+                    let rank = 0;
+                    querySnapshot.forEach((doc) => {
+                        const cat = doc.data();
+                        const topCatElement = topCatsElements[rank];
+                        rank++;
+                        
+                        if (topCatElement) {
+                            topCatElement.querySelector('.top-cat-image').style.backgroundImage = `url('${cat.url}')`;
+                            topCatElement.querySelector('.top-cat-votes').innerHTML = `${cat.votes} <i class="fas fa-heart"></i>`;
+                        }
+                    });
+                    
+                    // Заполняем оставшиеся элементы пустыми данными
+                    for (let i = rank; i < topCatsElements.length; i++) {
+                        const topCatElement = topCatsElements[i];
+                        topCatElement.querySelector('.top-cat-name').textContent = 'Нет данных';
+                        topCatElement.querySelector('.top-cat-votes').innerHTML = '0 <i class="fas fa-heart"></i>';
+                    }
+                })
+                .catch((error) => {
+                    console.log("Ошибка загрузки топа котиков:", error);
+                });
+        }
+        
+        // Инициализация при загрузке страницы
+        window.onload = initApp;
+    </script>
+</body>
+</html>
