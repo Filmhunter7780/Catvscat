@@ -31,7 +31,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             width: 100%;
             background: rgba(255, 255, 255, 0.97);
             border-radius: 20px;
@@ -73,7 +73,7 @@
         
         header {
             background: linear-gradient(to right, #ff9a9e, #fad0c4);
-            padding: 20px 30px;
+            padding: 15px 20px;
             text-align: center;
             position: relative;
         }
@@ -82,18 +82,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
         
         .tagline {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #5a3e51;
             font-weight: 600;
         }
@@ -102,36 +102,30 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 15px;
+            padding: 15px 10px;
         }
         
         .cats-row {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
             width: 100%;
-            max-width: 1000px;
             margin: 0 auto;
-            gap: 20px;
             padding: 10px 0;
+            gap: 5px;
         }
         
         .cat-card {
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            width: 45%;
-            max-width: 400px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            width: 48%;
+            max-width: 450px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             position: relative;
-        }
-        
-        .cat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
         
         .cat-image {
@@ -143,7 +137,7 @@
         }
         
         .vote-section {
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -154,26 +148,28 @@
             background: linear-gradient(to right, #6e8efb, #a777e3);
             color: white;
             border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
+            padding: 10px 25px;
+            font-size: 0.95rem;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
             margin-top: 5px;
-            box-shadow: 0 4px 12px rgba(110, 142, 251, 0.4);
+            box-shadow: 0 3px 8px rgba(110, 142, 251, 0.4);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            width: 100%;
+            justify-content: center;
         }
         
         .vote-btn:hover {
-            transform: scale(1.04);
-            box-shadow: 0 6px 16px rgba(110, 142, 251, 0.5);
+            transform: scale(1.03);
+            box-shadow: 0 5px 12px rgba(110, 142, 251, 0.5);
         }
         
         .vote-btn:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
         }
         
         .vote-btn:disabled {
@@ -183,31 +179,10 @@
             box-shadow: none;
         }
         
-        .vs-text {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 10px;
-        }
-        
-        .vs-circle {
-            background: linear-gradient(to right, #ff9a9e, #fad0c4);
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
-        }
-        
         .stats {
             display: flex;
             justify-content: center;
-            gap: 25px;
+            gap: 20px;
             margin-top: 15px;
             flex-wrap: wrap;
             padding: 10px 0;
@@ -216,41 +191,41 @@
         .stat-box {
             background: white;
             border-radius: 12px;
-            padding: 15px;
-            min-width: 160px;
+            padding: 12px;
+            min-width: 140px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
         }
         
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #6a3093;
-            margin: 8px 0;
+            margin: 6px 0;
         }
         
         .stat-label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #777;
         }
         
         .leaderboard {
-            padding: 25px;
+            padding: 20px;
             background: #f0edff;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .leaderboard h2 {
             text-align: center;
             color: #6a3093;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
         }
         
         .top-cats {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         
@@ -258,66 +233,57 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            width: 160px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 150px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
             position: relative;
             transition: transform 0.3s;
         }
         
         .top-cat:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
         }
         
         .top-cat-image {
-            height: 130px;
+            height: 120px;
             background-size: cover;
             background-position: center;
         }
         
         .top-cat-info {
-            padding: 12px;
+            padding: 10px;
             text-align: center;
-        }
-        
-        .top-cat-name {
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #6a3093;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .top-cat-votes {
             color: #ff6b6b;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .rank-badge {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 6px;
+            left: 6px;
             background: gold;
             color: #333;
-            width: 26px;
-            height: 26px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            font-size: 0.85rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
         
         .progress-container {
             width: 100%;
-            max-width: 700px;
-            margin: 15px auto;
+            max-width: 600px;
+            margin: 12px auto;
             background: #e0e0e0;
             border-radius: 8px;
-            height: 16px;
+            height: 14px;
             overflow: hidden;
         }
         
@@ -330,33 +296,34 @@
         }
         
         .instructions {
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             background: #f9f7ff;
             border-top: 1px solid #eee;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         footer {
             background: linear-gradient(to right, #6a3093, #a044ff);
             color: white;
             text-align: center;
-            padding: 20px;
-            font-size: 1rem;
+            padding: 15px;
+            font-size: 0.9rem;
         }
         
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
+            top: 15px;
+            right: 15px;
+            padding: 10px 18px;
             background: #4CAF50;
             color: white;
             border-radius: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
             transform: translateX(200%);
             transition: transform 0.3s ease;
             z-index: 1000;
+            font-size: 0.9rem;
         }
         
         .notification.show {
@@ -367,39 +334,33 @@
             .cats-row {
                 flex-direction: column;
                 align-items: center;
-                gap: 25px;
+                gap: 15px;
             }
             
             .cat-card {
-                width: 90%;
-                max-width: 350px;
+                width: 95%;
+                max-width: 400px;
             }
             
             h1 {
-                font-size: 2.2rem;
-            }
-            
-            .vs-circle {
-                width: 60px;
-                height: 60px;
-                font-size: 1.6rem;
+                font-size: 1.8rem;
             }
             
             .cat-image {
-                height: 240px;
+                height: 220px;
             }
             
             .stats {
-                gap: 12px;
+                gap: 10px;
             }
             
             .stat-box {
-                min-width: 140px;
-                padding: 12px;
+                min-width: 130px;
+                padding: 10px;
             }
             
             .stat-value {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
         }
     </style>
@@ -415,9 +376,9 @@
         
         <header>
             <div class="logo">
-                <i class="fas fa-cat fa-2x"></i>
+                <i class="fas fa-cat"></i>
                 <h1>CatVsCat</h1>
-                <i class="fas fa-cat fa-2x"></i>
+                <i class="fas fa-cat"></i>
             </div>
             <p class="tagline">Кто круче? Решай сейчас!</p>
         </header>
@@ -429,10 +390,6 @@
                     <div class="vote-section">
                         <button class="vote-btn" id="vote-btn1" onclick="vote(1)"><i class="fas fa-heart"></i> Нравится</button>
                     </div>
-                </div>
-                
-                <div class="vs-text">
-                    <div class="vs-circle">VS</div>
                 </div>
                 
                 <div class="cat-card">
@@ -461,70 +418,30 @@
         
         <div class="instructions">
             <h3><i class="fas fa-info-circle"></i> Как это работает?</h3>
-            <p>Выберите, какой котик вам нравится больше. После выбора автоматически загрузится следующая пара. Котик с наибольшим количеством голосов побеждает!</p>
+            <p>Выберите, какой котик вам нравится больше. После выбора автоматически загрузится следующая пара.</p>
         </div>
         
         <div class="leaderboard">
             <h2><i class="fas fa-trophy"></i> Топ котиков</h2>
             <div class="top-cats" id="top-cats">
-                <div class="top-cat">
-                    <div class="rank-badge">1</div>
-                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/0XYvRd7oD.jpg');"></div>
-                    <div class="top-cat-info">
-                        <div class="top-cat-name">Загрузка...</div>
-                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
-                    </div>
-                </div>
-                <div class="top-cat">
-                    <div class="rank-badge">2</div>
-                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/1q8mFkACz.jpg');"></div>
-                    <div class="top-cat-info">
-                        <div class="top-cat-name">Загрузка...</div>
-                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
-                    </div>
-                </div>
-                <div class="top-cat">
-                    <div class="rank-badge">3</div>
-                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/3kj7DfzVd.jpg');"></div>
-                    <div class="top-cat-info">
-                        <div class="top-cat-name">Загрузка...</div>
-                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
-                    </div>
-                </div>
-                <div class="top-cat">
-                    <div class="rank-badge">4</div>
-                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/71jUbx_3i.jpg');"></div>
-                    <div class="top-cat-info">
-                        <div class="top-cat-name">Загрузка...</div>
-                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
-                    </div>
-                </div>
-                <div class="top-cat">
-                    <div class="rank-badge">5</div>
-                    <div class="top-cat-image" style="background-image: url('https://cdn2.thecatapi.com/images/a96.jpg');"></div>
-                    <div class="top-cat-info">
-                        <div class="top-cat-name">Загрузка...</div>
-                        <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
-                    </div>
-                </div>
+                <!-- Топ коты будут загружены динамически -->
             </div>
         </div>
         
         <footer>
-            <p>CatVsCat © 2025 | Проголосуй за самого крутого кота!</p>
-            <p>Следующая пара котиков загружается автоматически после голосования</p>
+            <p>CatVsCat © 2023 | Проголосуй за самого крутого кота!</p>
         </footer>
     </div>
     
     <script>
-        // Конфигурация Firebase
+        // Ваша конфигурация Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyA1x3B5j_2V3u5gR5dI7H3zJqkf5z7Xe5A",
-            authDomain: "catvscat-8d7b3.firebaseapp.com",
-            projectId: "catvscat-8d7b3",
-            storageBucket: "catvscat-8d7b3.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef1234567890abcdef"
+            apiKey: "AIzaSyCt_AvOsAV5CzalWw2X9VOU9Vguvmi5hlU",
+            authDomain: "catvscat-995d4.firebaseapp.com",
+            projectId: "catvscat-995d4",
+            storageBucket: "catvscat-995d4.appspot.com",
+            messagingSenderId: "293400478220",
+            appId: "1:293400478220:web:5092f9aad4f053e6216429"
         };
         
         // Инициализация Firebase
@@ -675,8 +592,10 @@
             
             // Сохраняем голос в Firebase
             db.collection("cats").doc(votedCat.id).set({
+                id: votedCat.id,
                 url: votedCat.url,
-                votes: firebase.firestore.FieldValue.increment(1)
+                votes: firebase.firestore.FieldValue.increment(1),
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true })
             .then(() => {
                 console.log("Голос успешно записан!");
@@ -692,7 +611,7 @@
                 document.getElementById('progress-bar').style.width = '0%';
                 loadNewPair();
                 loadTopCats();
-            }, 700);
+            }, 600);
         }
         
         // Загрузка топ-котиков
@@ -703,25 +622,41 @@
                 .get()
                 .then((querySnapshot) => {
                     const topCatsContainer = document.getElementById('top-cats');
-                    const topCatsElements = topCatsContainer.querySelectorAll('.top-cat');
+                    topCatsContainer.innerHTML = '';
                     
-                    let rank = 0;
+                    let rank = 1;
                     querySnapshot.forEach((doc) => {
                         const cat = doc.data();
-                        const topCatElement = topCatsElements[rank];
-                        rank++;
                         
-                        if (topCatElement) {
-                            topCatElement.querySelector('.top-cat-image').style.backgroundImage = `url('${cat.url}')`;
-                            topCatElement.querySelector('.top-cat-votes').innerHTML = `${cat.votes} <i class="fas fa-heart"></i>`;
-                        }
+                        const topCatElement = document.createElement('div');
+                        topCatElement.className = 'top-cat';
+                        topCatElement.innerHTML = `
+                            <div class="rank-badge">${rank}</div>
+                            <div class="top-cat-image" style="background-image: url('${cat.url}')"></div>
+                            <div class="top-cat-info">
+                                <div class="top-cat-votes">${cat.votes || 0} <i class="fas fa-heart"></i></div>
+                            </div>
+                        `;
+                        
+                        topCatsContainer.appendChild(topCatElement);
+                        rank++;
                     });
                     
-                    // Заполняем оставшиеся элементы пустыми данными
-                    for (let i = rank; i < topCatsElements.length; i++) {
-                        const topCatElement = topCatsElements[i];
-                        topCatElement.querySelector('.top-cat-name').textContent = 'Нет данных';
-                        topCatElement.querySelector('.top-cat-votes').innerHTML = '0 <i class="fas fa-heart"></i>';
+                    // Добавляем заполнители, если котов меньше 5
+                    while (rank <= 5) {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'top-cat';
+                        placeholder.innerHTML = `
+                            <div class="rank-badge">${rank}</div>
+                            <div class="top-cat-image" style="background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-cat" style="font-size: 40px; color: #ccc;"></i>
+                            </div>
+                            <div class="top-cat-info">
+                                <div class="top-cat-votes">0 <i class="fas fa-heart"></i></div>
+                            </div>
+                        `;
+                        topCatsContainer.appendChild(placeholder);
+                        rank++;
                     }
                 })
                 .catch((error) => {
