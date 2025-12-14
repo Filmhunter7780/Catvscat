@@ -2,204 +2,246 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Kia Rio 2014 — Моторный отсек (предохранители и реле)</title>
+<title>Kia Rio 2014 — Предохранители</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-html,body{
+body{
   margin:0;
-  padding:0;
-  overflow:hidden;
+  font-family:system-ui;
   background:#0f172a;
   color:#e5e7eb;
-  font-family:system-ui;
+  display:flex;
+  height:100vh;
 }
-#ui{
-  position:absolute;
-  top:16px;
-  left:16px;
-  z-index:10;
-  background:#020617e6;
-  padding:14px 16px;
-  border-radius:12px;
+
+/* ===== ЛЕВАЯ ПАНЕЛЬ ===== */
+#panel{
   width:360px;
+  background:#020617;
+  padding:16px;
+  box-sizing:border-box;
 }
-h2{margin:0 0 8px 0;font-size:18px}
+h2{margin-top:0}
+button{
+  background:#1e293b;
+  color:#e5e7eb;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  margin-right:6px;
+  cursor:pointer;
+}
+button.active{
+  background:#38bdf8;
+  color:#020617;
+}
 .label{font-size:13px;color:#94a3b8}
-.value{margin-bottom:10px}
+#info{
+  margin-top:12px;
+  padding:10px;
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:8px;
+  min-height:110px;
+}
+
+/* ===== СХЕМА ===== */
+#scheme{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.grid{
+  background:#020617;
+  padding:20px;
+  border-radius:12px;
+  display:grid;
+  grid-template-columns: repeat(10, 44px);
+  grid-auto-rows: 44px;
+  gap:8px;
+}
+
+/* ===== ЭЛЕМЕНТЫ ===== */
+.fuse,.relay,.fl{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
+}
+.fuse{background:#1e293b}
+.relay{background:#334155}
+.fl{background:#475569}
+.empty{background:#020617}
+
+/* цвета по току */
+.a10{background:#991b1b}
+.a15{background:#1e40af}
+.a20{background:#facc15;color:#020617}
+.a25{background:#e5e7eb;color:#020617}
+.a30{background:#fb923c;color:#020617}
+.a40{background:#16a34a}
+.a50{background:#64748b}
+
+.fuse:hover,.relay:hover,.fl:hover{
+  outline:2px solid #38bdf8;
+}
 </style>
 </head>
 
 <body>
 
-<div id="ui">
+<!-- ===== ПАНЕЛЬ ===== -->
+<div id="panel">
   <h2>Kia Rio 2014</h2>
-  <div class="label">Моторный отсек</div>
-  <div id="info" class="label" style="margin-top:10px">
-    Кликните по элементу
+  <button id="btnEngine" class="active">Моторный отсек</button>
+  <button id="btnCabin">Салон</button>
+
+  <div id="info" class="label">
+    Кликните по предохранителю
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<!-- ===== СХЕМА ===== -->
+<div id="scheme">
+  <div id="engine" class="grid"></div>
+  <div id="cabin" class="grid" style="display:none"></div>
+</div>
 
 <script>
 /* ================= ДАННЫЕ ================= */
-const engineElements = [
-  {id:'F1',amps:null,desc:'Резерв'},
-  {id:'F2',amps:10,desc:'Обогрев наружных зеркал'},
-  {id:'F3',amps:15,desc:'Топливный модуль (бензонасос)'},
-  {id:'F4',amps:10,desc:'Звуковой сигнал'},
-  {id:'F5',amps:10,desc:'Кондиционер'},
-  {id:'F6',amps:null,desc:'Резерв'},
-  {id:'F7',amps:null,desc:'Резерв'},
-  {id:'F8',amps:15,desc:'Форсунки, ЭБУ, VVT'},
-  {id:'F9',amps:10,desc:'Датчики двигателя, иммобилайзер'},
-  {id:'F10',amps:10,desc:'TCM'},
-  {id:'F11',amps:10,desc:'Задний ход'},
-  {id:'F12',amps:null,desc:'Резерв'},
-  {id:'F13',amps:null,desc:'Резерв'},
 
-  {id:'FL1',amps:50,desc:'Распределительная коробка панели приборов'},
-  {id:'FL2',amps:30,desc:'Вентилятор охлаждения двигателя'},
-  {id:'FL3',amps:30,desc:'Блок управления двигателем'},
-  {id:'FL4',amps:40,desc:'Электронный ключ / замок зажигания'},
-  {id:'FL5',amps:50,desc:'Реле запуска двигателя (стартер)'},
+// МОТОРНЫЙ ОТСЕК
+const engineData = {
+ F1:'Резерв',
+ F2:'Обогрев наружных зеркал',
+ F3:'Топливный модуль (бензонасос)',
+ F4:'Звуковой сигнал',
+ F5:'Кондиционер',
+ F6:'Резерв',
+ F7:'Резерв',
+ F8:'Форсунки, ЭБУ, VVT',
+ F9:'Датчики двигателя, иммобилайзер',
+ F10:'TCM',
+ F11:'Задний ход',
+ F12:'Резерв',
+ F13:'Резерв',
+ FL1:'Распределительная коробка панели приборов',
+ FL2:'Вентилятор охлаждения',
+ FL3:'Блок управления двигателем',
+ FL4:'Электронный ключ / замок зажигания',
+ FL5:'Стартер',
+ R2:'Экстренное торможение',
+ R3:'Реле бензонасоса',
+ R4:'Обогрев зеркал',
+ R5:'Звуковой сигнал',
+ R6:'Кондиционер',
+ R7:'Вентилятор (низкая скорость)',
+ R8:'Резерв',
+ R9:'ЭБУ двигателя',
+ R10:'Вентилятор отопителя',
+ R11:'Резерв',
+ R12:'Блокировка зажигания',
+ R13:'Вентилятор (высокая скорость)',
+ R14:'Резерв'
+};
 
-  {id:'R1',relay:true,desc:'Резерв'},
-  {id:'R2',relay:true,desc:'Система предупреждения об экстренном торможении'},
-  {id:'R3',relay:true,desc:'Реле бензонасоса'},
-  {id:'R4',relay:true,desc:'Реле обогрева зеркал'},
-  {id:'R5',relay:true,desc:'Реле звукового сигнала'},
-  {id:'R6',relay:true,desc:'Реле кондиционера'},
-  {id:'R7',relay:true,desc:'Реле вентилятора (низкая скорость)'},
-  {id:'R8',relay:true,desc:'Резерв'},
-  {id:'R9',relay:true,desc:'Реле ЭБУ двигателя'},
-  {id:'R10',relay:true,desc:'Реле электровентилятора отопителя'},
-  {id:'R11',relay:true,desc:'Резерв'},
-  {id:'R12',relay:true,desc:'Реле блокировки зажигания'},
-  {id:'R13',relay:true,desc:'Реле вентилятора (высокая скорость)'},
-  {id:'R14',relay:true,desc:'Резерв'}
-];
+// САЛОН
+const cabinData = {
+ 1:'Прикуриватель',
+ 2:'Розетка доп. оборудования',
+ 3:'Прикуриватель',
+ 4:'Аудио, BCM, электронный ключ',
+ 5:'Подушка безопасности',
+ 6:'SRS',
+ 7:'Аварийка',
+ 10:'Задний стеклоочиститель',
+ 12:'Задний ПТФ',
+ 13:'Передний ПТФ',
+ 15:'Стоп-сигналы',
+ 16:'Комбинация приборов',
+ 17:'Обогрев сидений, OBD',
+ 18:'ABS / ESP',
+ 20:'ЭБУ двигателя',
+ 21:'Левая фара',
+ 22:'ДХО',
+ 23:'Аварийка',
+ 24:'Электронный ключ',
+ 26:'Start/Stop',
+ 30:'Стеклоочиститель',
+ 33:'Обогрев сидений',
+ 36:'Аудиосистема',
+ 37:'Левый задний фонарь',
+ 38:'Правый задний фонарь',
+ 44:'Кондиционер'
+};
 
-/* ================= ГЕОМЕТРИЯ ПО ФОТО ================= */
-const layout = [
-  {id:'F1',x:-4.2,z:2.4},{id:'F2',x:-4.2,z:1.7},{id:'F3',x:-4.2,z:1.0},{id:'F4',x:-4.2,z:0.3},
-  {id:'FL1',x:-4.2,z:-0.7},{id:'FL2',x:-4.2,z:-1.7},{id:'FL3',x:-4.2,z:-2.7},{id:'FL4',x:-4.2,z:-3.7},{id:'FL5',x:-4.2,z:-4.7},
+/* ================= ПОСТРОЕНИЕ ================= */
 
-  {id:'F5',x:-2.6,z:2.2},{id:'F6',x:-2.6,z:1.5},{id:'F7',x:-2.6,z:0.8},
-  {id:'F8',x:-2.6,z:0.1},{id:'F9',x:-2.6,z:-0.6},
-
-  {id:'R2',x:-2.6,z:-2.0},{id:'R3',x:-2.6,z:-3.2},{id:'R4',x:-2.6,z:-4.4},
-
-  {id:'R5',x:-0.8,z:2.3},{id:'R6',x:-0.8,z:1.3},{id:'R7',x:-0.8,z:0.3},{id:'R8',x:-0.8,z:-0.7},
-  {id:'R9',x:-0.8,z:-3.0},
-
-  {id:'R11',x:1.4,z:2.3},{id:'R12',x:1.4,z:1.3},{id:'R13',x:1.4,z:0.3},{id:'R14',x:1.4,z:-1.5},
-
-  {id:'F10',x:2.9,z:-3.5},{id:'F11',x:3.6,z:-3.5},{id:'F12',x:4.3,z:-3.5},{id:'F13',x:5.0,z:-3.5}
-];
-
-/* ================= THREE.JS ================= */
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x020617);
-
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0,7,13);
-
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth, innerHeight);
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
-document.body.appendChild(renderer.domElement);
-
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-
-/* ================= СВЕТ ================= */
-scene.add(new THREE.AmbientLight(0xffffff,0.35));
-const key = new THREE.DirectionalLight(0xffffff,1.2);
-key.position.set(6,10,6);
-scene.add(key);
-
-/* ================= ОСНОВАНИЕ ================= */
-scene.add(new THREE.Mesh(
-  new THREE.BoxGeometry(11,0.6,8),
-  new THREE.MeshStandardMaterial({color:0x020617,roughness:0.7})
-));
-
-/* ================= СОЗДАНИЕ ЭЛЕМЕНТОВ ================= */
-const meshes = [];
+const engine = document.getElementById('engine');
+const cabin = document.getElementById('cabin');
 const info = document.getElementById('info');
 
-function fuseMaterial(amps){
-  const color =
-    amps===10?0x991b1b:
-    amps===15?0x1e40af:
-    amps===20?0xfacc15:
-    amps===30?0xfb923c:
-    amps===40?0x16a34a:
-    amps===50?0x64748b:
-    0x374151;
+function cell(cls,id){
+  const d=document.createElement('div');
+  d.className=cls;
+  if(id){
+    d.textContent=id;
+    d.onclick=()=>info.innerHTML=`<b>${id}</b><br>${engineData[id]||cabinData[id]||'Резерв'}`;
+  }
+  return d;
+}
 
-  return new THREE.MeshPhysicalMaterial({
-    color,
-    roughness:0.35,
-    clearcoat:0.4,
-    transparent: amps==null,
-    opacity: amps?1:0.35
+/* ===== МОТОРНЫЙ ОТСЕК (по фото, упрощённо но логично) ===== */
+[
+ ['F1','', 'F5','R5','R11','','','','',''],
+ ['F2','', 'F6','R6','R12','','','','',''],
+ ['F3','', 'F7','R7','R13','','','','',''],
+ ['F4','', 'F8','R8','R14','','','','',''],
+ ['FL1','', 'F9','R9','','F10','F11','F12','F13',''],
+ ['FL2','','','','','','','','',''],
+ ['FL3','','','','','','','','',''],
+ ['FL4','','','','','','','','',''],
+ ['FL5','','','','','','','','','']
+].forEach(row=>{
+  row.forEach(c=>{
+    if(!c) engine.append(cell('empty'));
+    else if(c.startsWith('FL')) engine.append(cell('fl a50',c));
+    else if(c.startsWith('R')) engine.append(cell('relay',c));
+    else engine.append(cell('fuse a10',c));
   });
-}
+});
 
-layout.forEach(p=>{
-  const el = engineElements.find(e=>e.id===p.id);
-  if(!el) return;
-
-  let geom;
-  if(el.relay){
-    geom = new THREE.BoxGeometry(0.9,1.6,0.9);
-  }else if(p.id.startsWith('FL')){
-    geom = new THREE.BoxGeometry(1.4,1.3,1.0);
+/* ===== САЛОН (условная схема, 45 шт сгруппировано) ===== */
+let n=1;
+for(let i=0;i<45;i++){
+  if(cabinData[n]){
+    cabin.append(cell('fuse a10',n));
   }else{
-    geom = new THREE.BoxGeometry(0.6,1.1,0.6);
+    cabin.append(cell('fuse',n));
   }
-
-  const mesh = new THREE.Mesh(geom,fuseMaterial(el.amps));
-  mesh.position.set(p.x,1,p.z);
-  mesh.userData = el;
-  scene.add(mesh);
-  meshes.push(mesh);
-});
-
-/* ================= КЛИК ================= */
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-window.addEventListener('click',e=>{
-  mouse.x = (e.clientX/innerWidth)*2-1;
-  mouse.y = -(e.clientY/innerHeight)*2+1;
-  raycaster.setFromCamera(mouse,camera);
-  const hit = raycaster.intersectObjects(meshes);
-  if(hit.length){
-    const f = hit[0].object.userData;
-    info.innerHTML = `<b>${f.id}</b><br>${f.amps||'-'} A<br>${f.desc}`;
-  }
-});
-
-/* ================= ЦИКЛ ================= */
-function animate(){
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene,camera);
+  n++;
 }
-animate();
 
-window.addEventListener('resize',()=>{
-  camera.aspect = innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
+/* ================= КНОПКИ ================= */
+btnEngine.onclick=()=>{
+  btnEngine.classList.add('active');
+  btnCabin.classList.remove('active');
+  engine.style.display='grid';
+  cabin.style.display='none';
+  info.textContent='Кликните по предохранителю';
+};
+btnCabin.onclick=()=>{
+  btnCabin.classList.add('active');
+  btnEngine.classList.remove('active');
+  engine.style.display='none';
+  cabin.style.display='grid';
+  info.textContent='Кликните по предохранителю';
+};
 </script>
 
 </body>
