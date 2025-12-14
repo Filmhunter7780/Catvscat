@@ -37,12 +37,12 @@ h2{margin:0 0 8px 0;font-size:18px}
   <div class="label">Кликните по предохранителю</div>
 </div>
 
-<!-- ❗ СТРОГО r128 — НИЧЕГО ДРУГОГО -->
+<!-- ❗ СТРОГО СОВМЕСТИМЫЕ ВЕРСИИ -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-/* ===== ДАННЫЕ ПРЕДОХРАНИТЕЛЕЙ ===== */
+/* ================= ДАННЫЕ ================= */
 const fuses = [
  {id:1,amps:15,desc:'Обогрев зоны покоя щеток'},
  {id:2,amps:15,desc:'Доп. розетка'},
@@ -57,7 +57,7 @@ const fuses = [
  {id:11,amps:null,desc:'Резерв'},
  {id:12,amps:10,desc:'Задний ПТФ'},
  {id:13,amps:10,desc:'Передние ПТФ'},
- {id:14,amps:10,desc:'Авто-свет'},
+ {id:14,amps:10,desc:'Автосвет'},
  {id:15,amps:15,desc:'Стоп-сигналы'},
  {id:16,amps:10,desc:'Приборка, BCM'},
  {id:17,amps:10,desc:'Стопы, OBD'},
@@ -91,7 +91,7 @@ const fuses = [
  {id:45,amps:null,desc:'Резерв'}
 ];
 
-/* ===== СЦЕНА ===== */
+/* ================= СЦЕНА ================= */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
@@ -100,57 +100,36 @@ camera.position.set(0,7,11);
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth, innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
 document.body.appendChild(renderer.domElement);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-/* ===== СВЕТ ===== */
-scene.add(new THREE.AmbientLight(0xffffff,0.7));
-const dir = new THREE.DirectionalLight(0xffffff,0.8);
-dir.position.set(5,10,5);
-scene.add(dir);
+/* ================= СВЕТ ================= */
+scene.add(new THREE.AmbientLight(0xffffff,0.35));
 
-/* ===== ОСНОВАНИЕ (РЕАЛИЗМ) ===== */
+const keyLight = new THREE.DirectionalLight(0xffffff,1.2);
+keyLight.position.set(5,10,5);
+scene.add(keyLight);
 
-// основание
-const baseMat = new THREE.MeshStandardMaterial({
-  color:0x1e293b,
-  roughness:0.6,
-  metalness:0.1
-});
-const base = new THREE.Mesh(
-  new THREE.BoxGeometry(10.2,0.8,6.2),
-  baseMat
-);
-base.position.y = 0.2;
-scene.add(base);
+const fillLight = new THREE.DirectionalLight(0xffffff,0.4);
+fillLight.position.set(-5,6,-5);
+scene.add(fillLight);
 
-// рамка
-const frame = new THREE.Mesh(
-  new THREE.BoxGeometry(10.6,0.4,6.6),
-  new THREE.MeshStandardMaterial({color:0x020617})
-);
-frame.position.y = 0.7;
-scene.add(frame);
+const rimLight = new THREE.DirectionalLight(0x88aaff,0.6);
+rimLight.position.set(0,6,-8);
+scene.add(rimLight);
 
-// прозрачная крышка
-const cover = new THREE.Mesh(
-  new THREE.BoxGeometry(10.4,0.25,6.4),
-  new THREE.MeshPhysicalMaterial({
-    color:0x94a3b8,
-    transparent:true,
-    opacity:0.15,
-    roughness:0.1,
-    transmission:0.6,
-    thickness:0.5
-  })
-);
-cover.position.y = 1.35;
-scene.add(cover);
+/* ================= КОРПУС ================= */
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(10.4,0.8,6.4),
+  new THREE.MeshStandardMaterial({color:0x1e293b, roughness:0.6})
+));
 
-
-/* ===== РАСПОЛОЖЕНИЕ КАК В РЕАЛЬНОМ БЛОКЕ ===== */
+/* ================= РАСПОЛОЖЕНИЕ ================= */
 const layout = [
  {id:1,x:-4.4,z:2.4},{id:2,x:-3.5,z:2.4},{id:3,x:-2.6,z:2.4},{id:4,x:-1.7,z:2.4},
  {id:5,x:-0.8,z:2.4},{id:6,x:0.1,z:2.4},{id:7,x:1.0,z:2.4},{id:8,x:1.9,z:2.4},
@@ -172,6 +151,7 @@ const layout = [
 ];
 
 const fuseMeshes = [];
+
 layout.forEach(p=>{
   const f = fuses.find(x=>x.id===p.id);
   const color =
@@ -181,17 +161,27 @@ layout.forEach(p=>{
     f.amps===25?0xe5e7eb:
     0x374151;
 
-  const m = new THREE.Mesh(
+  const mat = new THREE.MeshPhysicalMaterial({
+    color,
+    roughness:0.35,
+    metalness:0,
+    clearcoat:0.4,
+    clearcoatRoughness:0.25,
+    transparent: !f.amps,
+    opacity: f.amps ? 1 : 0.35
+  });
+
+  const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(0.6,1.2,0.6),
-    new THREE.MeshStandardMaterial({color,transparent:true,opacity:f.amps?1:0.4})
+    mat
   );
-  m.position.set(p.x,1,p.z);
-  m.userData = f;
-  scene.add(m);
-  fuseMeshes.push(m);
+  mesh.position.set(p.x,1,p.z);
+  mesh.userData = f;
+  scene.add(mesh);
+  fuseMeshes.push(mesh);
 });
 
-/* ===== КЛИКИ ===== */
+/* ================= КЛИКИ ================= */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const ui = document.getElementById('ui');
@@ -213,7 +203,7 @@ window.addEventListener('click',e=>{
   }
 });
 
-/* ===== ЦИКЛ ===== */
+/* ================= ЦИКЛ ================= */
 function animate(){
   requestAnimationFrame(animate);
   controls.update();
