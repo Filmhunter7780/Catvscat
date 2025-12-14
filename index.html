@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Схема предохранителей автомобиля - точное расположение</title>
+    <title>2D Схема блока предохранителей в салоне автомобиля</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
-            background-color: #e9ecef;
+            background-color: #e0e6f0;
             color: #333;
             padding: 20px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         
         .container {
@@ -28,19 +28,19 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: linear-gradient(135deg, #0d2a6b 0%, #1a3a8f 100%);
+            background-color: #1c3f94;
             color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
         h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin-bottom: 10px;
         }
         
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
         }
         
@@ -52,178 +52,152 @@
         }
         
         .fuse-board-container {
-            flex: 1;
-            min-width: 500px;
-            background-color: #2c3e50;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            flex: 2;
+            min-width: 700px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
             position: relative;
-            overflow: hidden;
-        }
-        
-        .fuse-board-container::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            pointer-events: none;
         }
         
         .fuse-board-container h2 {
             color: white;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 25px;
             text-align: center;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3a3a3a;
+            padding-bottom: 10px;
         }
         
         .fuse-board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            position: relative;
-        }
-        
-        /* Стили для групп предохранителей как на изображении */
-        .fuse-group {
-            background-color: #34495e;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-        
-        /* Первая группа (41,42,43) - занимает всю строку сверху */
-        .fuse-group.top-row {
-            grid-column: span 4;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-        }
-        
-        /* Вторая группа (31-34) - под первой */
-        .fuse-group.second-row {
-            grid-column: span 4;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-        }
-        
-        /* Третья группа (23-26) - под второй */
-        .fuse-group.third-row {
-            grid-column: span 4;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-        }
-        
-        /* Четвертая группа (12-22) - занимает 3 колонки слева */
-        .fuse-group.left-column {
-            grid-column: span 3;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 15px;
-        }
-        
-        /* Пятая группа (1-11) - занимает 1 колонку справа */
-        .fuse-group.right-column {
-            grid-column: span 1;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 15px;
+            gap: 20px;
         }
         
-        /* Стили для отдельных предохранителей */
+        /* Строки предохранителей */
+        .fuse-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* Отдельный элемент предохранителя */
         .fuse-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(145deg, #3a506b, #2c3e50);
-            padding: 12px 8px;
+            background-color: #3a3a3a;
+            width: 65px;
+            height: 80px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            min-height: 70px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            border: 2px solid #4a4a4a;
             position: relative;
-            overflow: hidden;
         }
         
         .fuse-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(145deg, #4a6385, #3a506b);
-            border-color: #3498db;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            border-color: #5a9cf5;
+            background-color: #444;
         }
         
         .fuse-item.active {
-            border: 2px solid #e74c3c;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-            background: linear-gradient(145deg, #4a6385, #3a506b);
+            border-color: #ff6b6b;
+            box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
+            background-color: #444;
         }
         
         .fuse-item.reserve {
-            background: linear-gradient(145deg, #5d6d7e, #4a5a6b);
+            background-color: #505050;
+            border-color: #606060;
         }
         
         .fuse-number {
             font-weight: bold;
             color: white;
             font-size: 1.3rem;
-            margin-bottom: 5px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            margin-bottom: 8px;
         }
         
         .fuse-current {
             font-weight: bold;
-            color: #ecf0f1;
+            color: #f0f0f0;
+            font-size: 0.85rem;
+            background-color: rgba(0, 0, 0, 0.4);
             padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.9rem;
-            background-color: rgba(0, 0, 0, 0.3);
+            width: 80%;
             text-align: center;
-            width: 100%;
         }
         
         .fuse-current.amp {
-            background-color: rgba(41, 128, 185, 0.7);
+            background-color: #2a5cbd;
             color: white;
         }
         
         .fuse-current.reserve {
-            background-color: rgba(149, 165, 166, 0.7);
-            color: #2c3e50;
+            background-color: #707070;
+            color: #ddd;
+        }
+        
+        /* Специальные стили для строк */
+        .row-1 { /* 41-43 */
+            justify-content: center;
+        }
+        
+        .row-2 { /* 31-34 */
+            justify-content: center;
+        }
+        
+        .row-3 { /* 23-26 */
+            justify-content: center;
+        }
+        
+        .row-4 { /* 37-40 */
+            justify-content: center;
+        }
+        
+        .row-5 { /* 27-30 */
+            justify-content: center;
+        }
+        
+        .row-6 { /* 12-22 */
+            justify-content: center;
+        }
+        
+        .row-7 { /* 1-11 */
+            justify-content: center;
+        }
+        
+        /* Разделительная линия */
+        .divider {
+            height: 2px;
+            background-color: #4a4a4a;
+            margin: 20px auto;
+            width: 90%;
         }
         
         .details-panel {
             flex: 1;
             min-width: 300px;
             background-color: white;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 25px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .details-panel h2 {
-            color: #1a3a8f;
+            color: #1c3f94;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #eaeaea;
+            font-size: 1.5rem;
         }
         
         .details-content {
@@ -243,21 +217,9 @@
         
         .detail-label {
             font-weight: bold;
-            color: #1a3a8f;
+            color: #1c3f94;
             margin-bottom: 8px;
             font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .detail-label::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #3498db;
-            border-radius: 50%;
-            margin-right: 10px;
         }
         
         .detail-value {
@@ -274,7 +236,7 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 25px;
             background-color: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 8px;
@@ -285,7 +247,7 @@
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
-            color: #ecf0f1;
+            color: #f0f0f0;
         }
         
         .legend-color {
@@ -294,20 +256,20 @@
             border-radius: 3px;
         }
         
-        .legend-1 { background-color: #3498db; }
-        .legend-2 { background-color: #e74c3c; }
-        .legend-3 { background-color: #95a5a6; }
+        .legend-1 { background-color: #5a9cf5; }
+        .legend-2 { background-color: #ff6b6b; }
+        .legend-3 { background-color: #707070; }
         
         .instructions {
             background-color: white;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 25px;
             margin-top: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .instructions h2 {
-            color: #1a3a8f;
+            color: #1c3f94;
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #eaeaea;
@@ -319,7 +281,6 @@
         
         .instructions li {
             margin-bottom: 10px;
-            padding-left: 5px;
         }
         
         footer {
@@ -331,7 +292,7 @@
             font-size: 0.9rem;
         }
         
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
             .main-content {
                 flex-direction: column;
             }
@@ -340,68 +301,85 @@
                 min-width: 100%;
             }
             
-            .fuse-group.left-column {
-                grid-template-columns: repeat(2, 1fr);
+            .fuse-item {
+                width: 60px;
+                height: 75px;
             }
         }
         
-        @media (max-width: 600px) {
-            .fuse-board {
-                grid-template-columns: 1fr;
-            }
-            
-            .fuse-group.top-row,
-            .fuse-group.second-row,
-            .fuse-group.third-row {
+        @media (max-width: 768px) {
+            .fuse-row {
                 flex-wrap: wrap;
             }
             
-            .fuse-group.left-column {
-                grid-column: span 1;
-                grid-template-columns: 1fr;
+            .fuse-item {
+                width: 55px;
+                height: 70px;
             }
             
-            .fuse-group.right-column {
-                grid-column: span 1;
+            .fuse-number {
+                font-size: 1.2rem;
+            }
+            
+            .fuse-current {
+                font-size: 0.8rem;
             }
             
             h1 {
-                font-size: 1.8rem;
+                font-size: 1.7rem;
             }
         }
         
-        .group-label {
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background-color: #1a3a8f;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            z-index: 2;
+        @media (max-width: 480px) {
+            .fuse-board-container {
+                padding: 20px;
+            }
+            
+            .fuse-item {
+                width: 50px;
+                height: 65px;
+            }
+            
+            .fuse-number {
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
         }
         
-        .fuse-group {
-            padding-top: 20px;
+        .row-label {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 35px;
+            text-align: right;
+        }
+        
+        .fuse-row {
+            position: relative;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>2D Схема предохранителей автомобиля</h1>
-            <p class="subtitle">Точное расположение предохранителей как на оригинальной схеме</p>
+            <h1>Блок предохранителей в салоне автомобиля</h1>
+            <p class="subtitle">Точная схема расположения предохранителей по оригинальному изображению</p>
         </header>
         
         <div class="main-content">
             <div class="fuse-board-container">
-                <h2>Блок предохранителей</h2>
+                <h2>Схема блока предохранителей</h2>
                 <div class="fuse-board">
-                    <!-- Верхний ряд (41-43) -->
-                    <div class="fuse-group top-row">
-                        <div class="group-label">41-43</div>
+                    <!-- Первая строка: 41 42 43 -->
+                    <div class="fuse-row row-1">
                         <div class="fuse-item" data-id="41">
                             <span class="fuse-number">41</span>
                             <span class="fuse-current amp">25A</span>
@@ -416,9 +394,8 @@
                         </div>
                     </div>
                     
-                    <!-- Второй ряд (31-34) -->
-                    <div class="fuse-group second-row">
-                        <div class="group-label">31-34</div>
+                    <!-- Вторая строка: 31 32 33 34 -->
+                    <div class="fuse-row row-2">
                         <div class="fuse-item" data-id="31">
                             <span class="fuse-number">31</span>
                             <span class="fuse-current amp">20A</span>
@@ -437,9 +414,8 @@
                         </div>
                     </div>
                     
-                    <!-- Третий ряд (23-26) -->
-                    <div class="fuse-group third-row">
-                        <div class="group-label">23-26</div>
+                    <!-- Третья строка: 23 24 25 26 -->
+                    <div class="fuse-row row-3">
                         <div class="fuse-item" data-id="23">
                             <span class="fuse-number">23</span>
                             <span class="fuse-current amp">15A</span>
@@ -458,9 +434,52 @@
                         </div>
                     </div>
                     
-                    <!-- Левый столбец (12-22) -->
-                    <div class="fuse-group left-column">
-                        <div class="group-label">12-22</div>
+                    <div class="divider"></div>
+                    
+                    <!-- Четвертая строка: 37 38 39 40 -->
+                    <div class="fuse-row row-4">
+                        <div class="fuse-item" data-id="37">
+                            <span class="fuse-number">37</span>
+                            <span class="fuse-current amp">10A</span>
+                        </div>
+                        <div class="fuse-item" data-id="38">
+                            <span class="fuse-number">38</span>
+                            <span class="fuse-current amp">10A</span>
+                        </div>
+                        <div class="fuse-item" data-id="39">
+                            <span class="fuse-number">39</span>
+                            <span class="fuse-current amp">10A</span>
+                        </div>
+                        <div class="fuse-item" data-id="40">
+                            <span class="fuse-number">40</span>
+                            <span class="fuse-current amp">10A</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Пятая строка: 27 28 29 30 -->
+                    <div class="fuse-row row-5">
+                        <div class="fuse-item" data-id="27">
+                            <span class="fuse-number">27</span>
+                            <span class="fuse-current amp">15A</span>
+                        </div>
+                        <div class="fuse-item" data-id="28">
+                            <span class="fuse-number">28</span>
+                            <span class="fuse-current amp">15A</span>
+                        </div>
+                        <div class="fuse-item" data-id="29">
+                            <span class="fuse-number">29</span>
+                            <span class="fuse-current amp">10A</span>
+                        </div>
+                        <div class="fuse-item" data-id="30">
+                            <span class="fuse-number">30</span>
+                            <span class="fuse-current amp">25A</span>
+                        </div>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    
+                    <!-- Шестая строка: 12 13 14 15 16 17 18 19 20 21 22 -->
+                    <div class="fuse-row row-6">
                         <div class="fuse-item" data-id="12">
                             <span class="fuse-number">12</span>
                             <span class="fuse-current amp">10A</span>
@@ -507,9 +526,10 @@
                         </div>
                     </div>
                     
-                    <!-- Правый столбец (1-11) -->
-                    <div class="fuse-group right-column">
-                        <div class="group-label">1-11</div>
+                    <div class="divider"></div>
+                    
+                    <!-- Седьмая строка: 1 2 3 4 5 6 7 8 9 10 11 -->
+                    <div class="fuse-row row-7">
                         <div class="fuse-item" data-id="1">
                             <span class="fuse-number">1</span>
                             <span class="fuse-current amp">15A</span>
@@ -574,35 +594,36 @@
             </div>
             
             <div class="details-panel">
-                <h2>Детальная информация</h2>
+                <h2>Информация о предохранителе</h2>
                 <div class="details-content">
                     <div class="detail-item">
                         <div class="detail-label">Выберите предохранитель на схеме</div>
-                        <div class="detail-value">Нажмите на любой предохранитель в левой панели, чтобы увидеть его описание и назначение. Расположение предохранителей точно соответствует оригинальной схеме.</div>
+                        <div class="detail-value">Нажмите на любой предохранитель на схеме слева, чтобы увидеть его описание и назначение. Схема точно соответствует оригинальному изображению.</div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="instructions">
-            <h2>Как пользоваться схемой</h2>
+            <h2>Структура блока предохранителей</h2>
             <ul>
-                <li>Расположение предохранителей точно соответствует оригинальной схеме из предоставленного изображения.</li>
-                <li>Нажмите на любой предохранитель на схеме, чтобы увидеть его описание в правой панели.</li>
-                <li>Предохранители сгруппированы так же, как на оригинальной схеме: 41-43 (верх), 31-34, 23-26, 12-22 (левый столбец), 1-11 (правый столбец).</li>
-                <li>Предохранители с серым фоном являются резервными и не подключены в стандартной комплектации.</li>
-                <li>При замене предохранителя всегда используйте предохранитель с таким же номиналом тока (Ампер).</li>
+                <li><strong>Верхняя часть (3 строки):</strong> 41-43, 31-34, 23-26</li>
+                <li><strong>Средняя часть (2 строки):</strong> 37-40, 27-30</li>
+                <li><strong>Нижняя часть (длинные строки):</strong> 12-22, 1-11</li>
+                <li>Горизонтальные линии разделяют блок на логические секции</li>
+                <li>Расположение полностью соответствует оригинальной схеме из файла Shema-bloka-v-salone-3.jpg</li>
+                <li>Предохранители с серым фоном являются резервными и не используются в стандартной комплектации</li>
             </ul>
         </div>
         
         <footer>
-            <p>2D схема предохранителей автомобиля | Точное расположение как на оригинальном изображении</p>
-            <p>Все данные приведены в справочных целях. Для точной диагностики обратитесь к руководству по эксплуатации вашего автомобиля.</p>
+            <p>Схема блока предохранителей в салоне автомобиля | Точное расположение по оригинальному изображению</p>
+            <p>Для замены предохранителей всегда используйте предохранители с таким же номинальным током (А)</p>
         </footer>
     </div>
 
     <script>
-        // Данные о предохранителях
+        // Данные о предохранителях (расширенные)
         const fusesData = {
             1: { current: "15", description: "Реле обогревателя зоны покоя щеток стеклоочистителя ветрового окна" },
             2: { current: "15", description: "Розетка для подключения дополнительного оборудования" },
@@ -673,14 +694,35 @@
                 // Формируем содержимое для панели деталей
                 let currentText = fuseData.current === "-" ? "Резервный слот" : `${fuseData.current} А`;
                 let currentClass = fuseData.current === "-" ? "reserve" : "amp";
+                let locationInfo = "";
+                
+                // Определяем местоположение в блоке
+                if (fuseId >= 41 && fuseId <= 43) {
+                    locationInfo = "Расположение: Верхняя строка (41-43)";
+                } else if (fuseId >= 31 && fuseId <= 34) {
+                    locationInfo = "Расположение: Вторая строка сверху (31-34)";
+                } else if (fuseId >= 23 && fuseId <= 26) {
+                    locationInfo = "Расположение: Третья строка сверху (23-26)";
+                } else if (fuseId >= 37 && fuseId <= 40) {
+                    locationInfo = "Расположение: Четвертая строка (37-40)";
+                } else if (fuseId >= 27 && fuseId <= 30) {
+                    locationInfo = "Расположение: Пятая строка (27-30)";
+                } else if (fuseId >= 12 && fuseId <= 22) {
+                    locationInfo = "Расположение: Шестая строка (12-22)";
+                } else if (fuseId >= 1 && fuseId <= 11) {
+                    locationInfo = "Расположение: Нижняя строка (1-11)";
+                }
                 
                 // Обновляем содержимое панели деталей
                 detailsContent.innerHTML = `
                     <div class="detail-item">
                         <div class="detail-label">Предохранитель №${fuseId}</div>
                         <div class="detail-value">
-                            <span class="fuse-current ${currentClass}" style="display: inline-block; padding: 5px 10px; margin-right: 10px;">${currentText}</span>
-                            <span>${fuseData.current === "-" ? "Не используется в стандартной комплектации" : "Номинальный ток"}</span>
+                            <div style="margin-bottom: 10px;">
+                                <span class="fuse-current ${currentClass}" style="display: inline-block; padding: 5px 12px; margin-right: 15px; font-size: 1rem;">${currentText}</span>
+                                <span>${fuseData.current === "-" ? "Не используется" : "Номинальный ток"}</span>
+                            </div>
+                            <div>${locationInfo}</div>
                         </div>
                     </div>
                     <div class="detail-item">
@@ -692,7 +734,8 @@
                         <div class="detail-value">
                             ${fuseData.current === "-" 
                                 ? "Этот слот является резервным и не содержит предохранителя в стандартной комплектации автомобиля. Может использоваться для подключения дополнительного оборудования." 
-                                : `При замене всегда используйте предохранитель на <strong>${fuseData.current} А</strong>. Если этот предохранитель перегорает, проверьте соответствующую электрическую цепь на короткое замыкание.`}
+                                : `<p>При замене всегда используйте предохранитель на <strong>${fuseData.current} А</strong>.</p>
+                                   <p style="margin-top: 8px;">Если этот предохранитель перегорает, проверьте соответствующую электрическую цепь на короткое замыкание.</p>`}
                         </div>
                     </div>
                 `;
