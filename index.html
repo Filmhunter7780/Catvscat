@@ -19,7 +19,7 @@ button.active{background:#38bdf8;color:#020617}
   <h2>Kia Rio 2014</h2>
   <button id="btnCabin" class="active">Салон</button>
   <button id="btnEngine">Моторный отсек</button>
-  <div id="info" class="label">Кликните по предохранителю</div>
+  <div id="info" class="label">Кликните по элементу</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -31,7 +31,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0,7,11);
+camera.position.set(0,7,12);
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth, innerHeight);
@@ -55,11 +55,12 @@ const btnCabin = document.getElementById('btnCabin');
 const btnEngine = document.getElementById('btnEngine');
 
 /* ================= ОБЩЕЕ ================= */
-let fuseMeshes = [];
-function clearFuses(){
-  fuseMeshes.forEach(m=>scene.remove(m));
-  fuseMeshes = [];
-  info.textContent = 'Кликните по предохранителю';
+let activeMeshes = [];
+
+function clearBlock(){
+  activeMeshes.forEach(m=>scene.remove(m));
+  activeMeshes = [];
+  info.innerHTML = 'Кликните по элементу';
 }
 
 function fuseMaterial(amps){
@@ -82,64 +83,90 @@ function fuseMaterial(amps){
   });
 }
 
-/* ================= САЛОН (ПОЛНАЯ ВЕРСИЯ) ================= */
-const cabinFuses = [
- {id:1,amps:15,desc:'Прикуриватель'},
- {id:2,amps:15,desc:'Розетка'},
- {id:3,amps:15,desc:'Прикуриватель'},
- {id:4,amps:10,desc:'Аудио, BCM'},
- // … (для краткости, можно оставить твою полную таблицу)
-];
-
-const cabinLayout = [
- {id:1,x:-4.4,z:2.4},{id:2,x:-3.5,z:2.4},{id:3,x:-2.6,z:2.4},{id:4,x:-1.7,z:2.4}
- // ⚠️ здесь используется твой полный layout из предыдущей версии
-];
-
-function buildCabin(){
-  clearFuses();
-  cabinLayout.forEach(p=>{
-    const f = cabinFuses.find(x=>x.id===p.id);
-    if(!f) return;
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.6,1.2,0.6),
-      fuseMaterial(f.amps)
-    );
-    mesh.position.set(p.x,1,p.z);
-    mesh.userData = f;
-    scene.add(mesh);
-    fuseMeshes.push(mesh);
-  });
-}
-
 /* ================= МОТОРНЫЙ ОТСЕК ================= */
-const engineLayout = [
- {id:'F2',x:-3,z:2},{id:'F3',x:-2,z:2},{id:'F4',x:-1,z:2},{id:'F5',x:0,z:2},
- {id:'FL1',x:-2,z:0},{id:'FL2',x:0,z:0},{id:'FL3',x:2,z:0}
+
+const engineElements = [
+  {id:'F1',amps:null,desc:'Резерв'},
+  {id:'F2',amps:10,desc:'Обогрев зеркал'},
+  {id:'F3',amps:15,desc:'Бензонасос'},
+  {id:'F4',amps:10,desc:'Звуковой сигнал'},
+  {id:'F5',amps:10,desc:'Кондиционер'},
+  {id:'F6',amps:null,desc:'Резерв'},
+  {id:'F7',amps:null,desc:'Резерв'},
+  {id:'F8',amps:15,desc:'Форсунки, ЭБУ'},
+  {id:'F9',amps:10,desc:'Датчики двигателя'},
+  {id:'F10',amps:10,desc:'TCM'},
+  {id:'F11',amps:10,desc:'Задний ход'},
+  {id:'F12',amps:null,desc:'Резерв'},
+  {id:'F13',amps:null,desc:'Резерв'},
+
+  {id:'FL1',amps:50,desc:'Распред. коробка'},
+  {id:'FL2',amps:30,desc:'Вентилятор охлаждения'},
+  {id:'FL3',amps:30,desc:'ЭБУ двигателя'},
+  {id:'FL4',amps:40,desc:'Электронный ключ'},
+  {id:'FL5',amps:50,desc:'Стартер'},
+
+  {id:'R1',relay:true,desc:'Резерв'},
+  {id:'R2',relay:true,desc:'Экстренное торможение'},
+  {id:'R3',relay:true,desc:'Бензонасос'},
+  {id:'R4',relay:true,desc:'Обогрев зеркал'},
+  {id:'R5',relay:true,desc:'Сигнал'},
+  {id:'R6',relay:true,desc:'Кондиционер'},
+  {id:'R7',relay:true,desc:'Вентилятор (низкая)'},
+  {id:'R8',relay:true,desc:'Резерв'},
+  {id:'R9',relay:true,desc:'ЭБУ'},
+  {id:'R10',relay:true,desc:'Отопитель'},
+  {id:'R11',relay:true,desc:'Резерв'},
+  {id:'R12',relay:true,desc:'Блокировка зажигания'},
+  {id:'R13',relay:true,desc:'Вентилятор (высокая)'},
+  {id:'R14',relay:true,desc:'Резерв'}
 ];
 
-const engineFuses = {
- F2:{amps:10,desc:'Обогрев зеркал'},
- F3:{amps:15,desc:'Бензонасос'},
- F4:{amps:10,desc:'Сигнал'},
- F5:{amps:10,desc:'Кондиционер'},
- FL1:{amps:50,desc:'Распред. коробка'},
- FL2:{amps:30,desc:'Вентилятор'},
- FL3:{amps:30,desc:'ЭБУ двигателя'}
-};
+const engineLayout = [
+  {id:'F1',x:-4,z:2},{id:'F2',x:-3,z:2},{id:'F3',x:-2,z:2},{id:'F4',x:-1,z:2},
+  {id:'F5',x:0,z:2},{id:'F6',x:1,z:2},{id:'F7',x:2,z:2},{id:'F8',x:3,z:2},
+  {id:'F9',x:-3,z:1},{id:'F10',x:-2,z:1},{id:'F11',x:-1,z:1},
+  {id:'F12',x:0,z:1},{id:'F13',x:1,z:1},
+
+  {id:'R1',x:-4,z:-0.5},{id:'R2',x:-3,z:-0.5},{id:'R3',x:-2,z:-0.5},
+  {id:'R4',x:-1,z:-0.5},{id:'R5',x:0,z:-0.5},{id:'R6',x:1,z:-0.5},
+  {id:'R7',x:2,z:-0.5},{id:'R8',x:3,z:-0.5},
+  {id:'R9',x:-3,z:-1.8},{id:'R10',x:-2,z:-1.8},
+  {id:'R11',x:-1,z:-1.8},{id:'R12',x:0,z:-1.8},
+  {id:'R13',x:1,z:-1.8},{id:'R14',x:2,z:-1.8},
+
+  {id:'FL1',x:-3,z:-3},{id:'FL2',x:-1.5,z:-3},
+  {id:'FL3',x:0,z:-3},{id:'FL4',x:1.5,z:-3},{id:'FL5',x:3,z:-3}
+];
 
 function buildEngine(){
-  clearFuses();
+  clearBlock();
+
+  const base = new THREE.Mesh(
+    new THREE.BoxGeometry(10.6,0.6,7.2),
+    new THREE.MeshStandardMaterial({color:0x020617,roughness:0.7})
+  );
+  scene.add(base);
+  activeMeshes.push(base);
+
   engineLayout.forEach(p=>{
-    const f = engineFuses[p.id];
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.8,1.6,0.8),
-      fuseMaterial(f.amps)
-    );
+    const el = engineElements.find(e=>e.id===p.id);
+    if(!el) return;
+
+    let geom;
+    if(el.relay){
+      geom = new THREE.BoxGeometry(0.9,1.4,0.9);
+    }else if(p.id.startsWith('FL')){
+      geom = new THREE.BoxGeometry(1.4,1.2,1);
+    }else{
+      geom = new THREE.BoxGeometry(0.6,1.1,0.6);
+    }
+
+    const mesh = new THREE.Mesh(geom,fuseMaterial(el.amps));
     mesh.position.set(p.x,1,p.z);
-    mesh.userData = {id:p.id,...f};
+    mesh.userData = el;
     scene.add(mesh);
-    fuseMeshes.push(mesh);
+    activeMeshes.push(mesh);
   });
 }
 
@@ -151,26 +178,22 @@ window.addEventListener('click',e=>{
   mouse.x = (e.clientX/innerWidth)*2-1;
   mouse.y = -(e.clientY/innerHeight)*2+1;
   raycaster.setFromCamera(mouse,camera);
-  const hit = raycaster.intersectObjects(fuseMeshes);
-  if(hit.length){
-    const f = hit[0].object.userData;
+  const hits = raycaster.intersectObjects(activeMeshes);
+  if(hits.length && hits[0].object.userData){
+    const f = hits[0].object.userData;
     info.innerHTML = `<b>${f.id}</b><br>${f.amps||'-'} A<br>${f.desc}`;
   }
 });
 
 /* ================= КНОПКИ ================= */
-btnCabin.onclick = ()=>{
-  btnCabin.classList.add('active');
-  btnEngine.classList.remove('active');
-  buildCabin();
-};
 btnEngine.onclick = ()=>{
   btnEngine.classList.add('active');
   btnCabin.classList.remove('active');
   buildEngine();
 };
 
-buildCabin();
+/* ================= СТАРТ ================= */
+buildEngine();
 
 /* ================= ЦИКЛ ================= */
 function animate(){
