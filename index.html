@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Kia Rio 2014 — Блок предохранителей (салон, 2D)</title>
+<title>Kia Rio 2014 — Блок предохранителей (салон)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -16,7 +16,7 @@ body{
 }
 
 /* ===== ПАНЕЛЬ ===== */
-#ui{
+#info{
   width:340px;
   background:#020617;
   padding:16px;
@@ -26,71 +26,67 @@ h2{margin:0 0 8px}
 .label{font-size:13px;color:#94a3b8}
 .value{margin-bottom:10px}
 
-#info{
-  margin-top:12px;
-  padding:10px;
-  background:#020617;
-  border:1px solid #1e293b;
-  border-radius:8px;
-  min-height:120px;
-}
-
 /* ===== СХЕМА ===== */
 #scheme{
   flex:1;
   display:flex;
   justify-content:center;
   align-items:center;
-  overflow:auto;
 }
 
 .board{
   position:relative;
   width:900px;
-  height:520px;
-  background:#020617;
-  border-radius:16px;
+  height:560px;
+  background:#e5e7eb;
+  border-radius:12px;
 }
 
 /* ===== ПРЕДОХРАНИТЕЛИ ===== */
 .fuse{
   position:absolute;
   width:44px;
-  height:78px;
+  height:70px;
   border-radius:6px;
-  font-size:12px;
-  font-weight:700;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-size:12px;
+  font-weight:700;
   cursor:pointer;
-  background:#374151;
+  background:#b91c1c;
+  color:#fff;
 }
 
-/* цвета по амперам */
-.a10{background:#991b1b}
-.a15{background:#1e40af}
+/* цвета */
+.a10{background:#b91c1c}
+.a15{background:#1d4ed8}
 .a20{background:#facc15;color:#020617}
 .a25{background:#e5e7eb;color:#020617}
 .reserve{opacity:.35}
 
-.fuse:hover{
-  outline:2px solid #38bdf8;
+/* центральный блок */
+.center{
+  width:80px;
+  height:140px;
+  background:#84cc16;
+  border-radius:8px;
 }
 
-@media(max-width:900px){
-  body{flex-direction:column}
-  #ui{width:100%}
+.fuse:hover{
+  outline:2px solid #38bdf8;
 }
 </style>
 </head>
 
 <body>
 
-<div id="ui">
+<div id="info">
   <h2>Kia Rio 2014</h2>
   <div class="label">Салонный блок</div>
-  <div id="info" class="label">Кликните по предохранителю</div>
+  <div id="desc" class="label" style="margin-top:12px">
+    Кликните по предохранителю
+  </div>
 </div>
 
 <div id="scheme">
@@ -99,95 +95,110 @@ h2{margin:0 0 8px}
 
 <script>
 /* ===== ДАННЫЕ ===== */
-const fuses = [
- {id:1,amps:15,desc:'Обогрев зоны покоя щеток'},
- {id:2,amps:15,desc:'Доп. розетка'},
- {id:3,amps:15,desc:'Прикуриватель'},
- {id:4,amps:10,desc:'Аудио, BCM, ключ'},
- {id:5,amps:10,desc:'Airbag OFF'},
- {id:6,amps:10,desc:'SRS'},
- {id:7,amps:10,desc:'Аварийка'},
- {id:8,amps:null,desc:'Резерв'},
- {id:9,amps:null,desc:'Резерв'},
- {id:10,amps:15,desc:'Задний дворник'},
- {id:11,amps:null,desc:'Резерв'},
- {id:12,amps:10,desc:'Задний ПТФ'},
- {id:13,amps:10,desc:'Передние ПТФ'},
- {id:14,amps:10,desc:'Автосвет'},
- {id:15,amps:15,desc:'Стоп-сигналы'},
- {id:16,amps:10,desc:'Приборка, BCM'},
- {id:17,amps:10,desc:'Стопы, OBD'},
- {id:18,amps:10,desc:'ABS / ESP'},
- {id:19,amps:10,desc:'Задний ход'},
- {id:20,amps:10,desc:'ЭБУ двигателя'},
- {id:21,amps:10,desc:'Левая фара'},
- {id:22,amps:10,desc:'ДХО'},
- {id:23,amps:15,desc:'Аварийка'},
- {id:24,amps:25,desc:'Электронный ключ'},
- {id:25,amps:null,desc:'Резерв'},
- {id:26,amps:10,desc:'Start / Stop'},
- {id:27,amps:15,desc:'Скорость / АКП'},
- {id:28,amps:15,desc:'Катушки'},
- {id:29,amps:10,desc:'Фары, климат'},
- {id:30,amps:25,desc:'Дворники'},
- {id:31,amps:20,desc:'Замки дверей'},
- {id:32,amps:25,desc:'Стеклоподъемники'},
- {id:33,amps:15,desc:'Обогрев сидений'},
- {id:34,amps:null,desc:'Резерв'},
- {id:35,amps:10,desc:'Салон, багажник'},
- {id:36,amps:20,desc:'Аудио'},
- {id:37,amps:10,desc:'Левый задний фонарь'},
- {id:38,amps:10,desc:'Правый задний фонарь'},
- {id:39,amps:10,desc:'Замок зажигания'},
- {id:40,amps:10,desc:'Правая фара'},
- {id:41,amps:25,desc:'Левые стекла'},
- {id:42,amps:25,desc:'Правые стекла'},
- {id:43,amps:10,desc:'Обогрев зеркал'},
- {id:44,amps:10,desc:'Кондиционер'},
- {id:45,amps:null,desc:'Резерв'}
-];
+const fuses = {
+ 1:['15 A','Обогрев зоны щёток'],
+ 2:['15 A','Доп. розетка'],
+ 3:['15 A','Прикуриватель'],
+ 4:['10 A','Аудио, BCM'],
+ 5:['10 A','Airbag OFF'],
+ 6:['10 A','SRS'],
+ 7:['10 A','Аварийка'],
+ 8:['—','Резерв'],
+ 9:['—','Резерв'],
+ 10:['15 A','Задний дворник'],
+ 11:['—','Резерв'],
+ 12:['10 A','Задний ПТФ'],
+ 13:['10 A','Передний ПТФ'],
+ 14:['10 A','Автосвет'],
+ 15:['15 A','Стоп-сигналы'],
+ 16:['10 A','Приборка'],
+ 17:['10 A','OBD, обогрев сидений'],
+ 18:['10 A','ABS / ESP'],
+ 19:['10 A','Задний ход'],
+ 20:['10 A','ЭБУ двигателя'],
+ 21:['10 A','Левая фара'],
+ 22:['10 A','ДХО'],
+ 23:['15 A','Аварийка'],
+ 24:['25 A','Электронный ключ'],
+ 25:['—','Резерв'],
+ 26:['10 A','Start / Stop'],
+ 27:['15 A','МКП / АКП'],
+ 28:['15 A','Катушки'],
+ 29:['10 A','Фары, климат'],
+ 30:['25 A','Дворники'],
+ 31:['20 A','Замки дверей'],
+ 32:['25 A','Стеклоподъёмники'],
+ 33:['15 A','Обогрев сидений'],
+ 34:['—','Резерв'],
+ 35:['10 A','Освещение салона'],
+ 36:['20 A','Аудиосистема'],
+ 37:['10 A','Левый задний фонарь'],
+ 38:['10 A','Правый задний фонарь'],
+ 39:['10 A','Замок зажигания'],
+ 40:['10 A','Правая фара'],
+ 41:['25 A','Левые стекла'],
+ 42:['25 A','Правые стекла'],
+ 43:['10 A','Обогрев зеркал'],
+ 44:['10 A','Кондиционер'],
+ 45:['—','Резерв']
+};
 
-/* ===== ТОЧНО ТО ЖЕ РАСПОЛОЖЕНИЕ, ЧТО В 3D ===== */
+/* ===== РАСПОЛОЖЕНИЕ КАК НА ФОТО ===== */
 const layout = [
- {id:1,x:40,y:40},{id:2,x:120,y:40},{id:3,x:200,y:40},{id:4,x:280,y:40},
- {id:5,x:360,y:40},{id:6,x:440,y:40},{id:7,x:520,y:40},{id:8,x:600,y:40},
- {id:9,x:680,y:40},{id:10,x:760,y:40},{id:11,x:840,y:40},
-
- {id:12,x:60,y:140},{id:13,x:140,y:140},{id:14,x:220,y:140},{id:15,x:300,y:140},
- {id:16,x:380,y:140},{id:17,x:460,y:140},{id:18,x:540,y:140},{id:19,x:620,y:140},
- {id:20,x:700,y:140},{id:21,x:780,y:140},{id:22,x:860,y:140},
-
- {id:23,x:80,y:240},{id:24,x:160,y:240},{id:25,x:240,y:240},{id:26,x:320,y:240},
- {id:27,x:480,y:240},{id:28,x:560,y:240},{id:29,x:640,y:240},{id:30,x:720,y:240},
-
- {id:31,x:80,y:340},{id:32,x:160,y:340},{id:33,x:240,y:340},{id:34,x:320,y:340},
- {id:35,x:400,y:300},{id:36,x:440,y:300},
- {id:37,x:520,y:340},{id:38,x:600,y:340},{id:39,x:680,y:340},{id:40,x:760,y:340},
-
- {id:41,x:160,y:440},{id:42,x:240,y:440},{id:43,x:320,y:440},
- {id:44,x:600,y:440},{id:45,x:680,y:440}
+ // верх
+ [41,42,43,null,null,44,45],
+ // 2 ряд
+ [31,32,33,34,null,37,38,39,40],
+ // центр
+ [23,24,25,26,35,36,27,28,29,30],
+ // ниже
+ [12,13,14,15,16,17,18,19,20,21,22],
+ // низ
+ [1,2,3,4,5,6,7,8,9,10,11]
 ];
 
 const board = document.getElementById('board');
-const info = document.getElementById('info');
+const desc = document.getElementById('desc');
 
-layout.forEach(p=>{
-  const f = fuses.find(x=>x.id===p.id);
-  const d = document.createElement('div');
-  d.className = 'fuse ' +
-    (f.amps===10?'a10':
-     f.amps===15?'a15':
-     f.amps===20?'a20':
-     f.amps===25?'a25':'reserve');
-  d.style.left = p.x+'px';
-  d.style.top = p.y+'px';
-  d.textContent = p.id;
-  d.onclick = ()=>{
-    info.innerHTML = `<h3>№${f.id}</h3>
-      <div class="label">Номинал</div><div class="value">${f.amps||'—'} A</div>
-      <div class="label">Назначение</div><div class="value">${f.desc}</div>`;
-  };
-  board.appendChild(d);
+let y = 30;
+layout.forEach(row=>{
+  let x = 40;
+  row.forEach(n=>{
+    if(n===null){
+      x += 60;
+      return;
+    }
+
+    if(n===35 || n===36){
+      const c = document.createElement('div');
+      c.className = 'fuse center';
+      c.style.left = '410px';
+      c.style.top = '180px';
+      c.onclick = ()=>{
+        desc.innerHTML = `<b>№${n}</b><br>${fuses[n][0]}<br>${fuses[n][1]}`;
+      };
+      board.appendChild(c);
+      return;
+    }
+
+    const d = document.createElement('div');
+    const amp = fuses[n][0];
+    d.className = 'fuse ' +
+      (amp.includes('10')?'a10':
+       amp.includes('15')?'a15':
+       amp.includes('20')?'a20':
+       amp.includes('25')?'a25':'reserve');
+
+    d.textContent = n;
+    d.style.left = x+'px';
+    d.style.top = y+'px';
+    d.onclick = ()=>{
+      desc.innerHTML = `<b>№${n}</b><br>${fuses[n][0]}<br>${fuses[n][1]}`;
+    };
+    board.appendChild(d);
+    x += 60;
+  });
+  y += 90;
 });
 </script>
 
