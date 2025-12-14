@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Kia Rio 2014 — 3D блок предохранителей (салон)</title>
+<title>Kia Rio 2014 — Блоки предохранителей</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -22,9 +22,18 @@ html,body{
   background:#020617e6;
   padding:14px 16px;
   border-radius:12px;
-  width:340px;
+  width:360px;
 }
-h2{margin:0 0 8px 0;font-size:18px}
+button{
+  background:#1e293b;
+  color:#e5e7eb;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  margin-right:6px;
+  cursor:pointer;
+}
+button.active{background:#38bdf8;color:#020617}
 .label{font-size:13px;color:#94a3b8}
 .value{margin-bottom:10px}
 </style>
@@ -34,63 +43,15 @@ h2{margin:0 0 8px 0;font-size:18px}
 
 <div id="ui">
   <h2>Kia Rio 2014</h2>
-  <div class="label">Кликните по предохранителю</div>
+  <button id="btnCabin" class="active">Салон</button>
+  <button id="btnEngine">Моторный отсек</button>
+  <div id="info" class="label">Кликните по элементу</div>
 </div>
 
-<!-- ❗ СТРОГО СОВМЕСТИМЫЕ ВЕРСИИ -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-/* ================= ДАННЫЕ ================= */
-const fuses = [
- {id:1,amps:15,desc:'Обогрев зоны покоя щеток'},
- {id:2,amps:15,desc:'Доп. розетка'},
- {id:3,amps:15,desc:'Прикуриватель'},
- {id:4,amps:10,desc:'Аудио, BCM, ключ'},
- {id:5,amps:10,desc:'Airbag OFF'},
- {id:6,amps:10,desc:'SRS'},
- {id:7,amps:10,desc:'Аварийка'},
- {id:8,amps:null,desc:'Резерв'},
- {id:9,amps:null,desc:'Резерв'},
- {id:10,amps:15,desc:'Задний дворник'},
- {id:11,amps:null,desc:'Резерв'},
- {id:12,amps:10,desc:'Задний ПТФ'},
- {id:13,amps:10,desc:'Передние ПТФ'},
- {id:14,amps:10,desc:'Автосвет'},
- {id:15,amps:15,desc:'Стоп-сигналы'},
- {id:16,amps:10,desc:'Приборка, BCM'},
- {id:17,amps:10,desc:'Стопы, OBD'},
- {id:18,amps:10,desc:'ABS / ESP'},
- {id:19,amps:10,desc:'Задний ход'},
- {id:20,amps:10,desc:'ЭБУ двигателя'},
- {id:21,amps:10,desc:'Левая фара'},
- {id:22,amps:10,desc:'ДХО'},
- {id:23,amps:15,desc:'Аварийка'},
- {id:24,amps:25,desc:'Электронный ключ'},
- {id:25,amps:null,desc:'Резерв'},
- {id:26,amps:10,desc:'Start / Stop'},
- {id:27,amps:15,desc:'Скорость / АКП'},
- {id:28,amps:15,desc:'Катушки'},
- {id:29,amps:10,desc:'Фары, климат'},
- {id:30,amps:25,desc:'Дворники'},
- {id:31,amps:20,desc:'Замки дверей'},
- {id:32,amps:25,desc:'Стеклоподъемники'},
- {id:33,amps:15,desc:'Обогрев сидений'},
- {id:34,amps:null,desc:'Резерв'},
- {id:35,amps:10,desc:'Салон, багажник'},
- {id:36,amps:20,desc:'Аудио'},
- {id:37,amps:10,desc:'Левый задний фонарь'},
- {id:38,amps:10,desc:'Правый задний фонарь'},
- {id:39,amps:10,desc:'Замок зажигания'},
- {id:40,amps:10,desc:'Правая фара'},
- {id:41,amps:25,desc:'Левые стекла'},
- {id:42,amps:25,desc:'Правые стекла'},
- {id:43,amps:10,desc:'Обогрев зеркал'},
- {id:44,amps:10,desc:'Кондиционер'},
- {id:45,amps:null,desc:'Резерв'}
-];
-
 /* ================= СЦЕНА ================= */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
@@ -102,7 +63,6 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
 document.body.appendChild(renderer.domElement);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -110,98 +70,157 @@ controls.enableDamping = true;
 
 /* ================= СВЕТ ================= */
 scene.add(new THREE.AmbientLight(0xffffff,0.35));
-
 const keyLight = new THREE.DirectionalLight(0xffffff,1.2);
 keyLight.position.set(5,10,5);
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0xffffff,0.4);
-fillLight.position.set(-5,6,-5);
-scene.add(fillLight);
+/* ================= UI ================= */
+const info = document.getElementById('info');
+const btnCabin = document.getElementById('btnCabin');
+const btnEngine = document.getElementById('btnEngine');
 
-const rimLight = new THREE.DirectionalLight(0x88aaff,0.6);
-rimLight.position.set(0,6,-8);
-scene.add(rimLight);
+/* ================= ОБЩИЕ ================= */
+let objects = [];
+let active = null;
 
-/* ================= КОРПУС ================= */
-scene.add(new THREE.Mesh(
-  new THREE.BoxGeometry(10.4,0.8,6.4),
-  new THREE.MeshStandardMaterial({color:0x1e293b, roughness:0.6})
-));
+function clearScene(){
+  objects.forEach(o=>scene.remove(o));
+  objects = [];
+  active = null;
+  info.textContent = 'Кликните по элементу';
+}
 
-/* ================= РАСПОЛОЖЕНИЕ ================= */
-const layout = [
- {id:1,x:-4.4,z:2.4},{id:2,x:-3.5,z:2.4},{id:3,x:-2.6,z:2.4},{id:4,x:-1.7,z:2.4},
- {id:5,x:-0.8,z:2.4},{id:6,x:0.1,z:2.4},{id:7,x:1.0,z:2.4},{id:8,x:1.9,z:2.4},
- {id:9,x:2.8,z:2.4},{id:10,x:3.7,z:2.4},{id:11,x:4.6,z:2.4},
-
- {id:12,x:-4.2,z:1.4},{id:13,x:-3.3,z:1.4},{id:14,x:-2.4,z:1.4},{id:15,x:-1.5,z:1.4},
- {id:16,x:-0.6,z:1.4},{id:17,x:0.3,z:1.4},{id:18,x:1.2,z:1.4},{id:19,x:2.1,z:1.4},
- {id:20,x:3.0,z:1.4},{id:21,x:3.9,z:1.4},{id:22,x:4.8,z:1.4},
-
- {id:23,x:-4.0,z:0.4},{id:24,x:-3.1,z:0.4},{id:25,x:-2.2,z:0.4},{id:26,x:-1.3,z:0.4},
- {id:27,x:1.5,z:0.4},{id:28,x:2.4,z:0.4},{id:29,x:3.3,z:0.4},{id:30,x:4.2,z:0.4},
-
- {id:31,x:-4.0,z:-0.6},{id:32,x:-3.1,z:-0.6},{id:33,x:-2.2,z:-0.6},{id:34,x:-1.3,z:-0.6},
- {id:35,x:-0.2,z:-0.2},{id:36,x:0.3,z:-0.2},
- {id:37,x:1.6,z:-0.6},{id:38,x:2.5,z:-0.6},{id:39,x:3.4,z:-0.6},{id:40,x:4.3,z:-0.6},
-
- {id:41,x:-3.5,z:-1.6},{id:42,x:-2.6,z:-1.6},{id:43,x:-1.7,z:-1.6},
- {id:44,x:3.3,z:-1.6},{id:45,x:4.2,z:-1.6}
-];
-
-const fuseMeshes = [];
-
-layout.forEach(p=>{
-  const f = fuses.find(x=>x.id===p.id);
+function fuseMaterial(amps){
   const color =
-    f.amps===10?0x991b1b:
-    f.amps===15?0x1e40af:
-    f.amps===20?0xfacc15:
-    f.amps===25?0xe5e7eb:
+    amps===10?0x991b1b:
+    amps===15?0x1e40af:
+    amps===20?0xfacc15:
+    amps===25?0xe5e7eb:
+    amps===30?0xfb923c:
+    amps===40?0x16a34a:
+    amps===50?0x64748b:
     0x374151;
 
-  const mat = new THREE.MeshPhysicalMaterial({
+  return new THREE.MeshPhysicalMaterial({
     color,
     roughness:0.35,
-    metalness:0,
     clearcoat:0.4,
-    clearcoatRoughness:0.25,
-    transparent: !f.amps,
-    opacity: f.amps ? 1 : 0.35
+    transparent: amps==null,
+    opacity: amps?1:0.35
   });
+}
 
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(0.6,1.2,0.6),
-    mat
+/* ================= САЛОН ================= */
+const cabinLayout = [
+ {id:1,x:-4,z:2},{id:2,x:-3,z:2},{id:3,x:-2,z:2},{id:4,x:-1,z:2},
+ {id:5,x:0,z:2},{id:6,x:1,z:2},{id:7,x:2,z:2}
+];
+
+const cabinFuses = [
+ {id:1,amps:15,desc:'Прикуриватель'},
+ {id:2,amps:10,desc:'Аудио'},
+ {id:3,amps:10,desc:'ABS'},
+ {id:4,amps:15,desc:'Обогрев сидений'},
+ {id:5,amps:null,desc:'Резерв'},
+ {id:6,amps:10,desc:'Подсветка'},
+ {id:7,amps:20,desc:'Стеклоподъемники'}
+];
+
+function buildCabin(){
+  clearScene();
+  const base = new THREE.Mesh(
+    new THREE.BoxGeometry(10,0.6,6),
+    new THREE.MeshStandardMaterial({color:0x1e293b})
   );
-  mesh.position.set(p.x,1,p.z);
-  mesh.userData = f;
-  scene.add(mesh);
-  fuseMeshes.push(mesh);
-});
+  scene.add(base);
+  objects.push(base);
 
-/* ================= КЛИКИ ================= */
+  cabinLayout.forEach(p=>{
+    const f = cabinFuses.find(x=>x.id===p.id);
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6,1.2,0.6),
+      fuseMaterial(f.amps)
+    );
+    mesh.position.set(p.x,1,p.z);
+    mesh.userData = f;
+    scene.add(mesh);
+    objects.push(mesh);
+  });
+}
+
+/* ================= МОТОРНЫЙ ОТСЕК ================= */
+const engineLayout = [
+ {id:'F2',x:-3,z:2},{id:'F3',x:-2,z:2},{id:'F4',x:-1,z:2},{id:'F5',x:0,z:2},
+ {id:'F8',x:1,z:2},{id:'F9',x:2,z:2},{id:'F10',x:3,z:2},
+ {id:'FL1',x:-2,z:0},{id:'FL2',x:0,z:0},{id:'FL3',x:2,z:0},
+ {id:'FL4',x:-1,z:-2},{id:'FL5',x:1,z:-2}
+];
+
+const engineFuses = {
+ F2:{amps:10,desc:'Обогрев зеркал'},
+ F3:{amps:15,desc:'Бензонасос'},
+ F4:{amps:10,desc:'Сигнал'},
+ F5:{amps:10,desc:'Кондиционер'},
+ F8:{amps:15,desc:'Форсунки, ЭБУ'},
+ F9:{amps:10,desc:'Датчики двигателя'},
+ F10:{amps:10,desc:'TCM'},
+ FL1:{amps:50,desc:'Распред. коробка'},
+ FL2:{amps:30,desc:'Вентилятор'},
+ FL3:{amps:30,desc:'ЭБУ двигателя'},
+ FL4:{amps:40,desc:'Электронный ключ'},
+ FL5:{amps:50,desc:'Стартер'}
+};
+
+function buildEngine(){
+  clearScene();
+  const base = new THREE.Mesh(
+    new THREE.BoxGeometry(10,0.8,6),
+    new THREE.MeshStandardMaterial({color:0x020617})
+  );
+  scene.add(base);
+  objects.push(base);
+
+  engineLayout.forEach(p=>{
+    const f = engineFuses[p.id];
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.8,1.6,0.8),
+      fuseMaterial(f.amps)
+    );
+    mesh.position.set(p.x,1,p.z);
+    mesh.userData = {id:p.id,...f};
+    scene.add(mesh);
+    objects.push(mesh);
+  });
+}
+
+/* ================= КЛИК ================= */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-const ui = document.getElementById('ui');
-let active = null;
 
 window.addEventListener('click',e=>{
   mouse.x = (e.clientX/innerWidth)*2-1;
   mouse.y = -(e.clientY/innerHeight)*2+1;
   raycaster.setFromCamera(mouse,camera);
-  const hit = raycaster.intersectObjects(fuseMeshes);
+  const hit = raycaster.intersectObjects(objects.filter(o=>o.userData));
   if(hit.length){
-    if(active) active.material.emissive.set(0x000000);
-    active = hit[0].object;
-    active.material.emissive = new THREE.Color(0x38bdf8);
-    const f = active.userData;
-    ui.innerHTML = `<h2>Предохранитель №${f.id}</h2>
-      <div class='label'>Номинал</div><div class='value'>${f.amps?f.amps+' A':'Резерв'}</div>
-      <div class='label'>Назначение</div><div class='value'>${f.desc}</div>`;
+    const f = hit[0].object.userData;
+    info.innerHTML = `<b>${f.id}</b><br>${f.amps||'-'} A<br>${f.desc}`;
   }
 });
+
+/* ================= КНОПКИ ================= */
+btnCabin.onclick = ()=>{
+  btnCabin.classList.add('active');
+  btnEngine.classList.remove('active');
+  buildCabin();
+};
+btnEngine.onclick = ()=>{
+  btnEngine.classList.add('active');
+  btnCabin.classList.remove('active');
+  buildEngine();
+};
+
+buildCabin();
 
 /* ================= ЦИКЛ ================= */
 function animate(){
