@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интерактивная схема предохранителей автомобиля</title>
+    <title>Интерактивная схема предохранителей</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         }
         
         body {
-            background-color: #f5f7fa;
+            background-color: #f0f4f8;
             color: #333;
             line-height: 1.6;
             padding: 20px;
@@ -69,62 +69,96 @@
             border-bottom: 2px solid #eaeaea;
         }
         
-        .scheme-image {
+        .scheme-wrapper {
+            position: relative;
             width: 100%;
-            height: auto;
+            height: 600px;
+            background-color: #2c3e50;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: crosshair;
-            display: block;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
+        /* Стили для отображения схемы с цифрами как в файле */
+        .scheme-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Courier New', monospace;
+            color: white;
+            padding: 40px;
+            font-size: 1.4rem;
+            line-height: 2.5;
+            white-space: pre;
+            text-align: center;
+        }
+        
+        /* Слой с интерактивными областями */
         .touch-overlay {
             position: absolute;
-            top: 70px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border-radius: 8px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 10;
         }
         
         .touch-area {
             position: absolute;
-            background-color: rgba(52, 152, 219, 0.1);
-            border: 2px solid rgba(52, 152, 219, 0.3);
-            border-radius: 4px;
+            background-color: rgba(52, 152, 219, 0.15);
+            border: 2px solid rgba(52, 152, 219, 0.4);
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         
         .touch-area:hover {
-            background-color: rgba(52, 152, 219, 0.2);
-            border-color: rgba(52, 152, 219, 0.6);
-        }
-        
-        .touch-area.active {
-            background-color: rgba(231, 76, 60, 0.2);
-            border-color: rgba(231, 76, 60, 0.8);
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+            background-color: rgba(52, 152, 219, 0.3);
+            border-color: rgba(52, 152, 219, 0.8);
+            transform: scale(1.05);
             z-index: 20;
         }
         
-        .area-label {
-            position: absolute;
-            top: -25px;
-            left: 0;
-            background-color: #2c3e50;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            white-space: nowrap;
+        .touch-area.active {
+            background-color: rgba(231, 76, 60, 0.3);
+            border-color: rgba(231, 76, 60, 0.9);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+            z-index: 30;
         }
         
-        .touch-area:hover .area-label {
+        .touch-area.reserve {
+            background-color: rgba(149, 165, 166, 0.2);
+            border-color: rgba(149, 165, 166, 0.5);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .area-info {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(44, 62, 80, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            z-index: 40;
+        }
+        
+        .touch-area:hover .area-info {
             opacity: 1;
         }
         
@@ -231,8 +265,9 @@
             border-radius: 3px;
         }
         
-        .legend-1 { background-color: rgba(52, 152, 219, 0.3); border: 1px solid rgba(52, 152, 219, 0.6); }
-        .legend-2 { background-color: rgba(231, 76, 60, 0.3); border: 1px solid rgba(231, 76, 60, 0.8); }
+        .legend-1 { background-color: rgba(52, 152, 219, 0.6); border: 1px solid rgba(52, 152, 219, 0.8); }
+        .legend-2 { background-color: rgba(231, 76, 60, 0.6); border: 1px solid rgba(231, 76, 60, 0.9); }
+        .legend-3 { background-color: rgba(149, 165, 166, 0.6); border: 1px solid rgba(149, 165, 166, 0.8); }
         
         @media (max-width: 1100px) {
             .main-content {
@@ -249,11 +284,18 @@
                 padding: 15px;
             }
             
-            .touch-overlay {
-                top: 65px;
-                left: 15px;
-                right: 15px;
-                bottom: 15px;
+            .scheme-wrapper {
+                height: 500px;
+            }
+            
+            .scheme-display {
+                font-size: 1.1rem;
+                line-height: 2;
+                padding: 30px 20px;
+            }
+            
+            .touch-area {
+                font-size: 1rem;
             }
             
             h1 {
@@ -284,197 +326,128 @@
             color: #e74c3c;
             font-weight: bold;
         }
+        
+        .row-spacer {
+            height: 40px;
+            display: block;
+        }
+        
+        .row-spacer-small {
+            height: 20px;
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Интерактивная схема предохранителей автомобиля</h1>
-            <p class="subtitle">Нажмите на любой предохранитель на схеме для получения информации</p>
+            <h1>Интерактивная схема предохранителей</h1>
+            <p class="subtitle">Нажмите на любой предохранитель для получения информации</p>
         </header>
         
         <div class="main-content">
             <div class="image-container">
                 <h2>Схема блока предохранителей в салоне</h2>
                 
-                <!-- Контейнер для изображения -->
-                <div class="image-wrapper" style="position: relative;">
-                    <!-- Изображение схемы (заглушка, так как реального файла нет) -->
-                    <div class="scheme-placeholder" style="background: linear-gradient(135deg, #2c3e50 0%, #4a5a6b 100%); height: 600px; border-radius: 8px; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <!-- Имитация схемы предохранителей -->
-                        <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; font-weight: bold; font-size: 1.2rem; text-align: center;">
-                            СХЕМА БЛОКА ПРЕДОХРАНИТЕЛЕЙ В САЛОНЕ
+                <div class="scheme-wrapper">
+                    <!-- Отображение схемы с цифрами как в файле -->
+                    <div class="scheme-display">
+                        <div style="margin-bottom: 10px; color: #ecf0f1; font-size: 1.1rem;">СХЕМА РАСПОЛОЖЕНИЯ ПРЕДОХРАНИТЕЛЕЙ</div>
+                        
+                        <!-- Строка 1: 41 42 43 -->
+                        <div>
+                            <span style="margin: 0 25px;">41</span>
+                            <span style="margin: 0 25px;">42</span>
+                            <span style="margin: 0 25px;">43</span>
                         </div>
                         
-                        <!-- Имитация расположения предохранителей как в файле -->
-                        <div style="position: absolute; top: 70px; left: 50%; transform: translateX(-50%); color: #ecf0f1; text-align: center; font-family: monospace; font-size: 1.1rem; line-height: 1.8;">
-                            <div>41&nbsp;&nbsp;42&nbsp;&nbsp;43</div>
-                            <div>31&nbsp;&nbsp;32&nbsp;&nbsp;33&nbsp;&nbsp;34</div>
-                            <div>23&nbsp;&nbsp;24&nbsp;&nbsp;25&nbsp;&nbsp;26</div>
-                            <div style="height: 30px;"></div>
-                            <div>37&nbsp;&nbsp;38&nbsp;&nbsp;39&nbsp;&nbsp;40</div>
-                            <div>27&nbsp;&nbsp;28&nbsp;&nbsp;29&nbsp;&nbsp;30</div>
-                            <div style="height: 30px;"></div>
-                            <div>12&nbsp;13&nbsp;14&nbsp;15&nbsp;16&nbsp;17&nbsp;18&nbsp;19&nbsp;20&nbsp;21&nbsp;22</div>
-                            <div style="height: 30px;"></div>
-                            <div>1&nbsp;&nbsp;2&nbsp;&nbsp;3&nbsp;&nbsp;4&nbsp;&nbsp;5&nbsp;&nbsp;6&nbsp;&nbsp;7&nbsp;&nbsp;8&nbsp;&nbsp;9&nbsp;&nbsp;10&nbsp;&nbsp;11</div>
+                        <!-- Строка 2: 31 32 33 34 -->
+                        <div>
+                            <span style="margin: 0 20px;">31</span>
+                            <span style="margin: 0 20px;">32</span>
+                            <span style="margin: 0 20px;">33</span>
+                            <span style="margin: 0 20px;">34</span>
                         </div>
                         
-                        <!-- Подпись -->
-                        <div style="position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: #bdc3c7; font-size: 0.9rem;">
-                            Shema-bloka-v-salone-3.jpg
+                        <!-- Строка 3: 23 24 25 26 -->
+                        <div>
+                            <span style="margin: 0 20px;">23</span>
+                            <span style="margin: 0 20px;">24</span>
+                            <span style="margin: 0 20px;">25</span>
+                            <span style="margin: 0 20px;">26</span>
+                        </div>
+                        
+                        <div class="row-spacer"></div>
+                        
+                        <!-- Строка 4: 37 38 39 40 -->
+                        <div>
+                            <span style="margin: 0 20px;">37</span>
+                            <span style="margin: 0 20px;">38</span>
+                            <span style="margin: 0 20px;">39</span>
+                            <span style="margin: 0 20px;">40</span>
+                        </div>
+                        
+                        <!-- Строка 5: 27 28 29 30 -->
+                        <div>
+                            <span style="margin: 0 20px;">27</span>
+                            <span style="margin: 0 20px;">28</span>
+                            <span style="margin: 0 20px;">29</span>
+                            <span style="margin: 0 20px;">30</span>
+                        </div>
+                        
+                        <div class="row-spacer"></div>
+                        
+                        <!-- Строка 6: 12 13 14 15 16 17 18 19 20 21 22 -->
+                        <div>
+                            <span style="margin: 0 12px;">12</span>
+                            <span style="margin: 0 12px;">13</span>
+                            <span style="margin: 0 12px;">14</span>
+                            <span style="margin: 0 12px;">15</span>
+                            <span style="margin: 0 12px;">16</span>
+                            <span style="margin: 0 12px;">17</span>
+                            <span style="margin: 0 12px;">18</span>
+                            <span style="margin: 0 12px;">19</span>
+                            <span style="margin: 0 12px;">20</span>
+                            <span style="margin: 0 12px;">21</span>
+                            <span style="margin: 0 12px;">22</span>
+                        </div>
+                        
+                        <div class="row-spacer"></div>
+                        
+                        <!-- Строка 7: 1 2 3 4 5 6 7 8 9 10 11 -->
+                        <div>
+                            <span style="margin: 0 12px;">1</span>
+                            <span style="margin: 0 12px;">2</span>
+                            <span style="margin: 0 12px;">3</span>
+                            <span style="margin: 0 12px;">4</span>
+                            <span style="margin: 0 12px;">5</span>
+                            <span style="margin: 0 12px;">6</span>
+                            <span style="margin: 0 12px;">7</span>
+                            <span style="margin: 0 12px;">8</span>
+                            <span style="margin: 0 12px;">9</span>
+                            <span style="margin: 0 12px;">10</span>
+                            <span style="margin: 0 12px;">11</span>
                         </div>
                     </div>
                     
                     <!-- Интерактивный слой с областями для нажатия -->
                     <div class="touch-overlay" id="touchOverlay">
-                        <!-- Области для верхних предохранителей (41-43) -->
-                        <div class="touch-area" data-id="41" style="width: 60px; height: 60px; top: 70px; left: calc(50% - 90px);">
-                            <div class="area-label">41 (25A)</div>
-                        </div>
-                        <div class="touch-area" data-id="42" style="width: 60px; height: 60px; top: 70px; left: calc(50% - 30px);">
-                            <div class="area-label">42 (25A)</div>
-                        </div>
-                        <div class="touch-area" data-id="43" style="width: 60px; height: 60px; top: 70px; left: calc(50% + 30px);">
-                            <div class="area-label">43 (10A)</div>
-                        </div>
-                        
-                        <!-- Области для второй строки (31-34) -->
-                        <div class="touch-area" data-id="31" style="width: 60px; height: 60px; top: 140px; left: calc(50% - 135px);">
-                            <div class="area-label">31 (20A)</div>
-                        </div>
-                        <div class="touch-area" data-id="32" style="width: 60px; height: 60px; top: 140px; left: calc(50% - 45px);">
-                            <div class="area-label">32 (25A)</div>
-                        </div>
-                        <div class="touch-area" data-id="33" style="width: 60px; height: 60px; top: 140px; left: calc(50% + 45px);">
-                            <div class="area-label">33 (15A)</div>
-                        </div>
-                        <div class="touch-area reserve" data-id="34" style="width: 60px; height: 60px; top: 140px; left: calc(50% + 135px);">
-                            <div class="area-label">34 (Резерв)</div>
-                        </div>
-                        
-                        <!-- Области для третьей строки (23-26) -->
-                        <div class="touch-area" data-id="23" style="width: 60px; height: 60px; top: 210px; left: calc(50% - 135px);">
-                            <div class="area-label">23 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="24" style="width: 60px; height: 60px; top: 210px; left: calc(50% - 45px);">
-                            <div class="area-label">24 (25A)</div>
-                        </div>
-                        <div class="touch-area reserve" data-id="25" style="width: 60px; height: 60px; top: 210px; left: calc(50% + 45px);">
-                            <div class="area-label">25 (Резерв)</div>
-                        </div>
-                        <div class="touch-area" data-id="26" style="width: 60px; height: 60px; top: 210px; left: calc(50% + 135px);">
-                            <div class="area-label">26 (10A)</div>
-                        </div>
-                        
-                        <!-- Области для четвертой строки (37-40) -->
-                        <div class="touch-area" data-id="37" style="width: 60px; height: 60px; top: 300px; left: calc(50% - 135px);">
-                            <div class="area-label">37 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="38" style="width: 60px; height: 60px; top: 300px; left: calc(50% - 45px);">
-                            <div class="area-label">38 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="39" style="width: 60px; height: 60px; top: 300px; left: calc(50% + 45px);">
-                            <div class="area-label">39 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="40" style="width: 60px; height: 60px; top: 300px; left: calc(50% + 135px);">
-                            <div class="area-label">40 (10A)</div>
-                        </div>
-                        
-                        <!-- Области для пятой строки (27-30) -->
-                        <div class="touch-area" data-id="27" style="width: 60px; height: 60px; top: 370px; left: calc(50% - 135px);">
-                            <div class="area-label">27 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="28" style="width: 60px; height: 60px; top: 370px; left: calc(50% - 45px);">
-                            <div class="area-label">28 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="29" style="width: 60px; height: 60px; top: 370px; left: calc(50% + 45px);">
-                            <div class="area-label">29 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="30" style="width: 60px; height: 60px; top: 370px; left: calc(50% + 135px);">
-                            <div class="area-label">30 (25A)</div>
-                        </div>
-                        
-                        <!-- Области для длинной строки (12-22) -->
-                        <div class="touch-area" data-id="12" style="width: 45px; height: 60px; top: 460px; left: calc(50% - 247px);">
-                            <div class="area-label">12 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="13" style="width: 45px; height: 60px; top: 460px; left: calc(50% - 202px);">
-                            <div class="area-label">13 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="14" style="width: 45px; height: 60px; top: 460px; left: calc(50% - 157px);">
-                            <div class="area-label">14 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="15" style="width: 45px; height: 60px; top: 460px; left: calc(50% - 112px);">
-                            <div class="area-label">15 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="16" style="width: 45px; height: 60px; top: 460px; left: calc(50% - 67px);">
-                            <div class="area-label">16 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="17" style="width: 45px; height: 60px; top: 460px; left: calc(50% - 22px);">
-                            <div class="area-label">17 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="18" style="width: 45px; height: 60px; top: 460px; left: calc(50% + 23px);">
-                            <div class="area-label">18 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="19" style="width: 45px; height: 60px; top: 460px; left: calc(50% + 68px);">
-                            <div class="area-label">19 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="20" style="width: 45px; height: 60px; top: 460px; left: calc(50% + 113px);">
-                            <div class="area-label">20 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="21" style="width: 45px; height: 60px; top: 460px; left: calc(50% + 158px);">
-                            <div class="area-label">21 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="22" style="width: 45px; height: 60px; top: 460px; left: calc(50% + 203px);">
-                            <div class="area-label">22 (10A)</div>
-                        </div>
-                        
-                        <!-- Области для нижней строки (1-11) -->
-                        <div class="touch-area" data-id="1" style="width: 45px; height: 60px; top: 540px; left: calc(50% - 247px);">
-                            <div class="area-label">1 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="2" style="width: 45px; height: 60px; top: 540px; left: calc(50% - 202px);">
-                            <div class="area-label">2 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="3" style="width: 45px; height: 60px; top: 540px; left: calc(50% - 157px);">
-                            <div class="area-label">3 (15A)</div>
-                        </div>
-                        <div class="touch-area" data-id="4" style="width: 45px; height: 60px; top: 540px; left: calc(50% - 112px);">
-                            <div class="area-label">4 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="5" style="width: 45px; height: 60px; top: 540px; left: calc(50% - 67px);">
-                            <div class="area-label">5 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="6" style="width: 45px; height: 60px; top: 540px; left: calc(50% - 22px);">
-                            <div class="area-label">6 (10A)</div>
-                        </div>
-                        <div class="touch-area" data-id="7" style="width: 45px; height: 60px; top: 540px; left: calc(50% + 23px);">
-                            <div class="area-label">7 (10A)</div>
-                        </div>
-                        <div class="touch-area reserve" data-id="8" style="width: 45px; height: 60px; top: 540px; left: calc(50% + 68px);">
-                            <div class="area-label">8 (Резерв)</div>
-                        </div>
-                        <div class="touch-area reserve" data-id="9" style="width: 45px; height: 60px; top: 540px; left: calc(50% + 113px);">
-                            <div class="area-label">9 (Резерв)</div>
-                        </div>
-                        <div class="touch-area" data-id="10" style="width: 45px; height: 60px; top: 540px; left: calc(50% + 158px);">
-                            <div class="area-label">10 (15A)</div>
-                        </div>
-                        <div class="touch-area reserve" data-id="11" style="width: 45px; height: 60px; top: 540px; left: calc(50% + 203px);">
-                            <div class="area-label">11 (Резерв)</div>
-                        </div>
+                        <!-- Области будут добавлены через JavaScript -->
                     </div>
                 </div>
                 
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color legend-1"></div>
-                        <span>Наведите курсор на предохранитель</span>
+                        <span>Рабочий предохранитель</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color legend-2"></div>
                         <span>Выбранный предохранитель</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-3"></div>
+                        <span>Резервный слот</span>
                     </div>
                 </div>
             </div>
@@ -493,17 +466,17 @@
         <div class="instructions">
             <h2>Как пользоваться интерактивной схемой</h2>
             <ul>
-                <li><span class="highlight">Наведите курсор</span> на любой предохранитель на схеме, чтобы увидеть его номер</li>
+                <li><span class="highlight">Наведите курсор</span> на любой предохранитель на схеме, чтобы увидеть его номер и ток</li>
                 <li><span class="highlight">Нажмите на предохранитель</span>, чтобы получить полную информацию о нем в правой панели</li>
-                <li>Предохранители с пометкой "Резерв" являются запасными и не подключены в стандартной комплектации</li>
+                <li>Предохранители с серым фоном являются резервными и не подключены в стандартной комплектации</li>
                 <li>При замене предохранителя всегда используйте предохранитель с таким же номиналом тока (Ампер)</li>
-                <li>Если какой-то элемент автомобиля не работает, проверьте соответствующий предохранитель на схеме</li>
+                <li>Схема точно соответствует расположению из файла Shema-bloka-v-salone-3.jpg</li>
             </ul>
         </div>
         
         <footer>
-            <p>Интерактивная схема предохранителей автомобиля | На основе технической документации</p>
-            <p>Все данные приведены в справочных целях. Для точной диагностики обратитесь к руководству по эксплуатации вашего автомобиля.</p>
+            <p>Интерактивная схема предохранителей автомобиля | Расположение: Shema-bloka-v-salone-3.jpg</p>
+            <p>Для точной диагностики обратитесь к руководству по эксплуатации вашего автомобиля</p>
         </footer>
     </div>
 
@@ -557,11 +530,109 @@
             45: { current: "-", description: "Резервный слот" }
         };
         
-        // Получаем все области для нажатия
-        const touchAreas = document.querySelectorAll('.touch-area');
+        // Координаты и размеры для каждой строки (относительные значения)
+        const rowConfigurations = [
+            { // Строка 1: 41 42 43 (3 элемента)
+                ids: [41, 42, 43],
+                top: 80,
+                leftStart: 350,
+                width: 80,
+                height: 60,
+                spacing: 120
+            },
+            { // Строка 2: 31 32 33 34 (4 элемента)
+                ids: [31, 32, 33, 34],
+                top: 150,
+                leftStart: 280,
+                width: 80,
+                height: 60,
+                spacing: 100
+            },
+            { // Строка 3: 23 24 25 26 (4 элемента)
+                ids: [23, 24, 25, 26],
+                top: 220,
+                leftStart: 280,
+                width: 80,
+                height: 60,
+                spacing: 100
+            },
+            { // Строка 4: 37 38 39 40 (4 элемента) - после пробела
+                ids: [37, 38, 39, 40],
+                top: 320,
+                leftStart: 280,
+                width: 80,
+                height: 60,
+                spacing: 100
+            },
+            { // Строка 5: 27 28 29 30 (4 элемента)
+                ids: [27, 28, 29, 30],
+                top: 390,
+                leftStart: 280,
+                width: 80,
+                height: 60,
+                spacing: 100
+            },
+            { // Строка 6: 12 13 14 15 16 17 18 19 20 21 22 (11 элементов)
+                ids: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                top: 480,
+                leftStart: 110,
+                width: 60,
+                height: 50,
+                spacing: 65
+            },
+            { // Строка 7: 1 2 3 4 5 6 7 8 9 10 11 (11 элементов)
+                ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                top: 540,
+                leftStart: 110,
+                width: 60,
+                height: 50,
+                spacing: 65
+            }
+        ];
+        
+        // Создаем интерактивные области
+        const touchOverlay = document.getElementById('touchOverlay');
         const detailsContent = document.getElementById('detailsContent');
         
-        // Добавляем обработчик события для каждой области
+        // Массив для хранения всех созданных областей
+        const touchAreas = [];
+        
+        // Создаем области для каждой строки
+        rowConfigurations.forEach(rowConfig => {
+            rowConfig.ids.forEach((id, index) => {
+                const fuseData = fusesData[id];
+                const isReserve = fuseData.current === "-";
+                
+                // Вычисляем позицию
+                const left = rowConfig.leftStart + (index * rowConfig.spacing);
+                
+                // Создаем элемент области
+                const area = document.createElement('div');
+                area.className = `touch-area ${isReserve ? 'reserve' : ''}`;
+                area.dataset.id = id;
+                
+                // Устанавливаем стили позиционирования
+                area.style.width = `${rowConfig.width}px`;
+                area.style.height = `${rowConfig.height}px`;
+                area.style.top = `${rowConfig.top}px`;
+                area.style.left = `${left}px`;
+                
+                // Добавляем номер предохранителя в центр области
+                area.textContent = id;
+                
+                // Создаем элемент с дополнительной информацией
+                const info = document.createElement('div');
+                info.className = 'area-info';
+                info.textContent = isReserve ? 'Резерв' : `${fuseData.current}А`;
+                area.appendChild(info);
+                
+                // Добавляем область в контейнер
+                touchOverlay.appendChild(area);
+                touchAreas.push(area);
+            });
+        });
+        
+        // Добавляем обработчики событий для каждой области
         touchAreas.forEach(area => {
             area.addEventListener('click', function() {
                 // Убираем активный класс у всех областей
@@ -582,20 +653,29 @@
                 
                 // Определяем местоположение в блоке
                 let locationInfo = "";
+                let rowInfo = "";
+                
                 if (fuseId >= 41 && fuseId <= 43) {
-                    locationInfo = "Расположение: Первая строка (41-43)";
+                    locationInfo = "Первая строка (41-43)";
+                    rowInfo = "Верхняя часть блока";
                 } else if (fuseId >= 31 && fuseId <= 34) {
-                    locationInfo = "Расположение: Вторая строка (31-34)";
+                    locationInfo = "Вторая строка (31-34)";
+                    rowInfo = "Верхняя часть блока";
                 } else if (fuseId >= 23 && fuseId <= 26) {
-                    locationInfo = "Расположение: Третья строка (23-26)";
+                    locationInfo = "Третья строка (23-26)";
+                    rowInfo = "Верхняя часть блока";
                 } else if (fuseId >= 37 && fuseId <= 40) {
-                    locationInfo = "Расположение: Четвертая строка (37-40)";
+                    locationInfo = "Четвертая строка (37-40)";
+                    rowInfo = "Средняя часть блока";
                 } else if (fuseId >= 27 && fuseId <= 30) {
-                    locationInfo = "Расположение: Пятая строка (27-30)";
+                    locationInfo = "Пятая строка (27-30)";
+                    rowInfo = "Средняя часть блока";
                 } else if (fuseId >= 12 && fuseId <= 22) {
-                    locationInfo = "Расположение: Шестая строка (12-22)";
+                    locationInfo = "Шестая строка (12-22)";
+                    rowInfo = "Нижняя часть блока";
                 } else if (fuseId >= 1 && fuseId <= 11) {
-                    locationInfo = "Расположение: Седьмая строка (1-11)";
+                    locationInfo = "Седьмая строка (1-11)";
+                    rowInfo = "Нижняя часть блока";
                 }
                 
                 // Обновляем содержимое панели деталей
@@ -607,7 +687,8 @@
                                 <span class="fuse-current ${currentClass}">${currentText}</span>
                                 <span>${fuseData.current === "-" ? "Не используется в стандартной комплектации" : "Номинальный ток"}</span>
                             </div>
-                            <div>${locationInfo}</div>
+                            <div><strong>Расположение:</strong> ${locationInfo}</div>
+                            <div><strong>Секция блока:</strong> ${rowInfo}</div>
                         </div>
                     </div>
                     <div class="detail-item">
@@ -619,28 +700,44 @@
                         <div class="detail-value">
                             ${fuseData.current === "-" 
                                 ? "Этот слот является резервным и не содержит предохранителя в стандартной комплектации автомобиля. Может использоваться для подключения дополнительного оборудования." 
-                                : `При замене всегда используйте предохранитель на <strong>${fuseData.current} А</strong>. Если этот предохранитель перегорает, проверьте соответствующую электрическую цепь на короткое замыкание.`}
+                                : `<p>При замене всегда используйте предохранитель на <strong>${fuseData.current} А</strong>.</p>
+                                   <p style="margin-top: 8px;">Если этот предохранитель перегорает, проверьте соответствующую электрическую цепь на короткое замыкание.</p>`}
                         </div>
                     </div>
                 `;
             });
-            
-            // Добавляем эффект при наведении
-            area.addEventListener('mouseenter', function() {
-                const label = this.querySelector('.area-label');
-                if (label) label.style.opacity = '1';
-            });
-            
-            area.addEventListener('mouseleave', function() {
-                const label = this.querySelector('.area-label');
-                if (label && !this.classList.contains('active')) {
-                    label.style.opacity = '0';
-                }
-            });
         });
         
         // Автоматически выбираем первый предохранитель при загрузке страницы
-        document.querySelector('.touch-area[data-id="1"]').click();
+        if (touchAreas.length > 0) {
+            setTimeout(() => {
+                touchAreas[touchAreas.length - 11].click(); // Выбираем предохранитель №1 (последняя строка, первый элемент)
+            }, 100);
+        }
+        
+        // Адаптация размеров для мобильных устройств
+        function adjustForMobile() {
+            if (window.innerWidth <= 768) {
+                // Уменьшаем размеры и позиции для мобильных устройств
+                const scaleFactor = 0.7;
+                touchAreas.forEach(area => {
+                    const currentWidth = parseInt(area.style.width);
+                    const currentHeight = parseInt(area.style.height);
+                    const currentTop = parseInt(area.style.top);
+                    const currentLeft = parseInt(area.style.left);
+                    
+                    area.style.width = `${currentWidth * scaleFactor}px`;
+                    area.style.height = `${currentHeight * scaleFactor}px`;
+                    area.style.top = `${currentTop * scaleFactor}px`;
+                    area.style.left = `${currentLeft * scaleFactor}px`;
+                    area.style.fontSize = '0.9rem';
+                });
+            }
+        }
+        
+        // Вызываем функцию адаптации при загрузке и изменении размера окна
+        window.addEventListener('load', adjustForMobile);
+        window.addEventListener('resize', adjustForMobile);
     </script>
 </body>
 </html>
