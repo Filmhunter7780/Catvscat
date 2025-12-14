@@ -19,21 +19,56 @@ h2{margin:0 0 8px 0;font-size:18px}
 </div>
 
 <!-- NON‑MODULE Three.js (РАБОТАЕТ ВЕЗДЕ) -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
 <script>
 const fuses = [
- {id:1,amps:15,desc:'Обогрев зоны покоя щеток'},
- {id:2,amps:15,desc:'Дополнительная розетка'},
+ {id:1,amps:15,desc:'Реле обогревателя зоны покоя щеток стеклоочистителя'},
+ {id:2,amps:15,desc:'Розетка для подключения доп. оборудования'},
  {id:3,amps:15,desc:'Прикуриватель'},
- {id:4,amps:10,desc:'Аудио / BCM / ключ'},
- {id:5,amps:10,desc:'Airbag OFF'},
- {id:6,amps:10,desc:'SRS'},
+ {id:4,amps:10,desc:'Аудио, BCM, электронный ключ'},
+ {id:5,amps:10,desc:'Сигнализатор отключения подушки безопасности'},
+ {id:6,amps:10,desc:'Блок SRS'},
  {id:7,amps:10,desc:'Аварийная сигнализация'},
  {id:8,amps:null,desc:'Резерв'},
  {id:9,amps:null,desc:'Резерв'},
- {id:10,amps:15,desc:'Задний стеклоочиститель'}
+ {id:10,amps:15,desc:'Задний стеклоочиститель и омыватель'},
+ {id:11,amps:null,desc:'Резерв'},
+ {id:12,amps:10,desc:'Задний ПТФ'},
+ {id:13,amps:10,desc:'Передние ПТФ'},
+ {id:14,amps:10,desc:'Автоотключение освещения'},
+ {id:15,amps:15,desc:'Стоп-сигналы, электронный ключ'},
+ {id:16,amps:10,desc:'Комбинация приборов, BCM'},
+ {id:17,amps:10,desc:'Стоп-сигналы, обогрев сидений, OBD'},
+ {id:18,amps:10,desc:'ABS / ESP'},
+ {id:19,amps:10,desc:'Фонарь заднего хода'},
+ {id:20,amps:10,desc:'ЭБУ двигателя, электронный ключ'},
+ {id:21,amps:10,desc:'Левая блок-фара'},
+ {id:22,amps:10,desc:'Дневные ходовые огни'},
+ {id:23,amps:15,desc:'Реле аварийной сигнализации'},
+ {id:24,amps:25,desc:'Блок электронного ключа'},
+ {id:25,amps:null,desc:'Резерв'},
+ {id:26,amps:10,desc:'Кнопка Start/Stop'},
+ {id:27,amps:15,desc:'Датчик скорости / АКП'},
+ {id:28,amps:15,desc:'Катушки зажигания'},
+ {id:29,amps:10,desc:'Фары, климат, стеклоподъемники, BCM'},
+ {id:30,amps:25,desc:'Очиститель ветрового стекла'},
+ {id:31,amps:20,desc:'Замки дверей'},
+ {id:32,amps:25,desc:'Блокировка стеклоподъемников'},
+ {id:33,amps:15,desc:'Обогрев передних сидений'},
+ {id:34,amps:null,desc:'Резерв'},
+ {id:35,amps:10,desc:'Освещение салона, багажник, кондиционер'},
+ {id:36,amps:20,desc:'Аудиосистема'},
+ {id:37,amps:10,desc:'Левый задний фонарь, подсветка'},
+ {id:38,amps:10,desc:'Правый задний фонарь, подсветка'},
+ {id:39,amps:10,desc:'Замок зажигания / АКП'},
+ {id:40,amps:10,desc:'Правая блок-фара, приборы'},
+ {id:41,amps:25,desc:'Стеклоподъемники (левые)'},
+ {id:42,amps:25,desc:'Стеклоподъемники (правые)'},
+ {id:43,amps:10,desc:'Обогрев зеркал'},
+ {id:44,amps:10,desc:'Кондиционер'},
+ {id:45,amps:null,desc:'Резерв'}
 ];
 
 const scene = new THREE.Scene();
