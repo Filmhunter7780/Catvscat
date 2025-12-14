@@ -2,36 +2,110 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Kia Rio 2014 — Блоки предохранителей</title>
+<title>Kia Rio 2014 — Моторный отсек (предохранители и реле)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-html,body{margin:0;padding:0;overflow:hidden;background:#0f172a;color:#e5e7eb;font-family:system-ui}
-#ui{position:absolute;top:16px;left:16px;z-index:10;background:#020617e6;padding:14px 16px;border-radius:12px;width:360px}
-button{background:#1e293b;color:#e5e7eb;border:none;padding:6px 10px;border-radius:6px;margin-right:6px;cursor:pointer}
-button.active{background:#38bdf8;color:#020617}
+html,body{
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background:#0f172a;
+  color:#e5e7eb;
+  font-family:system-ui;
+}
+#ui{
+  position:absolute;
+  top:16px;
+  left:16px;
+  z-index:10;
+  background:#020617e6;
+  padding:14px 16px;
+  border-radius:12px;
+  width:360px;
+}
+h2{margin:0 0 8px 0;font-size:18px}
 .label{font-size:13px;color:#94a3b8}
 .value{margin-bottom:10px}
 </style>
 </head>
+
 <body>
 
 <div id="ui">
   <h2>Kia Rio 2014</h2>
-  <button id="btnCabin" class="active">Салон</button>
-  <button id="btnEngine">Моторный отсек</button>
-  <div id="info" class="label">Кликните по элементу</div>
+  <div class="label">Моторный отсек</div>
+  <div id="info" class="label" style="margin-top:10px">
+    Кликните по элементу
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-/* ================= СЦЕНА ================= */
+/* ================= ДАННЫЕ ================= */
+const engineElements = [
+  {id:'F1',amps:null,desc:'Резерв'},
+  {id:'F2',amps:10,desc:'Обогрев наружных зеркал'},
+  {id:'F3',amps:15,desc:'Топливный модуль (бензонасос)'},
+  {id:'F4',amps:10,desc:'Звуковой сигнал'},
+  {id:'F5',amps:10,desc:'Кондиционер'},
+  {id:'F6',amps:null,desc:'Резерв'},
+  {id:'F7',amps:null,desc:'Резерв'},
+  {id:'F8',amps:15,desc:'Форсунки, ЭБУ, VVT'},
+  {id:'F9',amps:10,desc:'Датчики двигателя, иммобилайзер'},
+  {id:'F10',amps:10,desc:'TCM'},
+  {id:'F11',amps:10,desc:'Задний ход'},
+  {id:'F12',amps:null,desc:'Резерв'},
+  {id:'F13',amps:null,desc:'Резерв'},
+
+  {id:'FL1',amps:50,desc:'Распределительная коробка панели приборов'},
+  {id:'FL2',amps:30,desc:'Вентилятор охлаждения двигателя'},
+  {id:'FL3',amps:30,desc:'Блок управления двигателем'},
+  {id:'FL4',amps:40,desc:'Электронный ключ / замок зажигания'},
+  {id:'FL5',amps:50,desc:'Реле запуска двигателя (стартер)'},
+
+  {id:'R1',relay:true,desc:'Резерв'},
+  {id:'R2',relay:true,desc:'Система предупреждения об экстренном торможении'},
+  {id:'R3',relay:true,desc:'Реле бензонасоса'},
+  {id:'R4',relay:true,desc:'Реле обогрева зеркал'},
+  {id:'R5',relay:true,desc:'Реле звукового сигнала'},
+  {id:'R6',relay:true,desc:'Реле кондиционера'},
+  {id:'R7',relay:true,desc:'Реле вентилятора (низкая скорость)'},
+  {id:'R8',relay:true,desc:'Резерв'},
+  {id:'R9',relay:true,desc:'Реле ЭБУ двигателя'},
+  {id:'R10',relay:true,desc:'Реле электровентилятора отопителя'},
+  {id:'R11',relay:true,desc:'Резерв'},
+  {id:'R12',relay:true,desc:'Реле блокировки зажигания'},
+  {id:'R13',relay:true,desc:'Реле вентилятора (высокая скорость)'},
+  {id:'R14',relay:true,desc:'Резерв'}
+];
+
+/* ================= ГЕОМЕТРИЯ ПО ФОТО ================= */
+const layout = [
+  {id:'F1',x:-4.2,z:2.4},{id:'F2',x:-4.2,z:1.7},{id:'F3',x:-4.2,z:1.0},{id:'F4',x:-4.2,z:0.3},
+  {id:'FL1',x:-4.2,z:-0.7},{id:'FL2',x:-4.2,z:-1.7},{id:'FL3',x:-4.2,z:-2.7},{id:'FL4',x:-4.2,z:-3.7},{id:'FL5',x:-4.2,z:-4.7},
+
+  {id:'F5',x:-2.6,z:2.2},{id:'F6',x:-2.6,z:1.5},{id:'F7',x:-2.6,z:0.8},
+  {id:'F8',x:-2.6,z:0.1},{id:'F9',x:-2.6,z:-0.6},
+
+  {id:'R2',x:-2.6,z:-2.0},{id:'R3',x:-2.6,z:-3.2},{id:'R4',x:-2.6,z:-4.4},
+
+  {id:'R5',x:-0.8,z:2.3},{id:'R6',x:-0.8,z:1.3},{id:'R7',x:-0.8,z:0.3},{id:'R8',x:-0.8,z:-0.7},
+  {id:'R9',x:-0.8,z:-3.0},
+
+  {id:'R11',x:1.4,z:2.3},{id:'R12',x:1.4,z:1.3},{id:'R13',x:1.4,z:0.3},{id:'R14',x:1.4,z:-1.5},
+
+  {id:'F10',x:2.9,z:-3.5},{id:'F11',x:3.6,z:-3.5},{id:'F12',x:4.3,z:-3.5},{id:'F13',x:5.0,z:-3.5}
+];
+
+/* ================= THREE.JS ================= */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
 
 const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0,7,12);
+camera.position.set(0,7,13);
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth, innerHeight);
@@ -46,29 +120,24 @@ controls.enableDamping = true;
 /* ================= СВЕТ ================= */
 scene.add(new THREE.AmbientLight(0xffffff,0.35));
 const key = new THREE.DirectionalLight(0xffffff,1.2);
-key.position.set(5,10,5);
+key.position.set(6,10,6);
 scene.add(key);
 
-/* ================= UI ================= */
+/* ================= ОСНОВАНИЕ ================= */
+scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(11,0.6,8),
+  new THREE.MeshStandardMaterial({color:0x020617,roughness:0.7})
+));
+
+/* ================= СОЗДАНИЕ ЭЛЕМЕНТОВ ================= */
+const meshes = [];
 const info = document.getElementById('info');
-const btnCabin = document.getElementById('btnCabin');
-const btnEngine = document.getElementById('btnEngine');
-
-/* ================= ОБЩЕЕ ================= */
-let activeMeshes = [];
-
-function clearBlock(){
-  activeMeshes.forEach(m=>scene.remove(m));
-  activeMeshes = [];
-  info.innerHTML = 'Кликните по элементу';
-}
 
 function fuseMaterial(amps){
   const color =
     amps===10?0x991b1b:
     amps===15?0x1e40af:
     amps===20?0xfacc15:
-    amps===25?0xe5e7eb:
     amps===30?0xfb923c:
     amps===40?0x16a34a:
     amps===50?0x64748b:
@@ -83,92 +152,25 @@ function fuseMaterial(amps){
   });
 }
 
-/* ================= МОТОРНЫЙ ОТСЕК ================= */
+layout.forEach(p=>{
+  const el = engineElements.find(e=>e.id===p.id);
+  if(!el) return;
 
-const engineElements = [
-  {id:'F1',amps:null,desc:'Резерв'},
-  {id:'F2',amps:10,desc:'Обогрев зеркал'},
-  {id:'F3',amps:15,desc:'Бензонасос'},
-  {id:'F4',amps:10,desc:'Звуковой сигнал'},
-  {id:'F5',amps:10,desc:'Кондиционер'},
-  {id:'F6',amps:null,desc:'Резерв'},
-  {id:'F7',amps:null,desc:'Резерв'},
-  {id:'F8',amps:15,desc:'Форсунки, ЭБУ'},
-  {id:'F9',amps:10,desc:'Датчики двигателя'},
-  {id:'F10',amps:10,desc:'TCM'},
-  {id:'F11',amps:10,desc:'Задний ход'},
-  {id:'F12',amps:null,desc:'Резерв'},
-  {id:'F13',amps:null,desc:'Резерв'},
+  let geom;
+  if(el.relay){
+    geom = new THREE.BoxGeometry(0.9,1.6,0.9);
+  }else if(p.id.startsWith('FL')){
+    geom = new THREE.BoxGeometry(1.4,1.3,1.0);
+  }else{
+    geom = new THREE.BoxGeometry(0.6,1.1,0.6);
+  }
 
-  {id:'FL1',amps:50,desc:'Распред. коробка'},
-  {id:'FL2',amps:30,desc:'Вентилятор охлаждения'},
-  {id:'FL3',amps:30,desc:'ЭБУ двигателя'},
-  {id:'FL4',amps:40,desc:'Электронный ключ'},
-  {id:'FL5',amps:50,desc:'Стартер'},
-
-  {id:'R1',relay:true,desc:'Резерв'},
-  {id:'R2',relay:true,desc:'Экстренное торможение'},
-  {id:'R3',relay:true,desc:'Бензонасос'},
-  {id:'R4',relay:true,desc:'Обогрев зеркал'},
-  {id:'R5',relay:true,desc:'Сигнал'},
-  {id:'R6',relay:true,desc:'Кондиционер'},
-  {id:'R7',relay:true,desc:'Вентилятор (низкая)'},
-  {id:'R8',relay:true,desc:'Резерв'},
-  {id:'R9',relay:true,desc:'ЭБУ'},
-  {id:'R10',relay:true,desc:'Отопитель'},
-  {id:'R11',relay:true,desc:'Резерв'},
-  {id:'R12',relay:true,desc:'Блокировка зажигания'},
-  {id:'R13',relay:true,desc:'Вентилятор (высокая)'},
-  {id:'R14',relay:true,desc:'Резерв'}
-];
-
-const engineLayout = [
-  {id:'F1',x:-4,z:2},{id:'F2',x:-3,z:2},{id:'F3',x:-2,z:2},{id:'F4',x:-1,z:2},
-  {id:'F5',x:0,z:2},{id:'F6',x:1,z:2},{id:'F7',x:2,z:2},{id:'F8',x:3,z:2},
-  {id:'F9',x:-3,z:1},{id:'F10',x:-2,z:1},{id:'F11',x:-1,z:1},
-  {id:'F12',x:0,z:1},{id:'F13',x:1,z:1},
-
-  {id:'R1',x:-4,z:-0.5},{id:'R2',x:-3,z:-0.5},{id:'R3',x:-2,z:-0.5},
-  {id:'R4',x:-1,z:-0.5},{id:'R5',x:0,z:-0.5},{id:'R6',x:1,z:-0.5},
-  {id:'R7',x:2,z:-0.5},{id:'R8',x:3,z:-0.5},
-  {id:'R9',x:-3,z:-1.8},{id:'R10',x:-2,z:-1.8},
-  {id:'R11',x:-1,z:-1.8},{id:'R12',x:0,z:-1.8},
-  {id:'R13',x:1,z:-1.8},{id:'R14',x:2,z:-1.8},
-
-  {id:'FL1',x:-3,z:-3},{id:'FL2',x:-1.5,z:-3},
-  {id:'FL3',x:0,z:-3},{id:'FL4',x:1.5,z:-3},{id:'FL5',x:3,z:-3}
-];
-
-function buildEngine(){
-  clearBlock();
-
-  const base = new THREE.Mesh(
-    new THREE.BoxGeometry(10.6,0.6,7.2),
-    new THREE.MeshStandardMaterial({color:0x020617,roughness:0.7})
-  );
-  scene.add(base);
-  activeMeshes.push(base);
-
-  engineLayout.forEach(p=>{
-    const el = engineElements.find(e=>e.id===p.id);
-    if(!el) return;
-
-    let geom;
-    if(el.relay){
-      geom = new THREE.BoxGeometry(0.9,1.4,0.9);
-    }else if(p.id.startsWith('FL')){
-      geom = new THREE.BoxGeometry(1.4,1.2,1);
-    }else{
-      geom = new THREE.BoxGeometry(0.6,1.1,0.6);
-    }
-
-    const mesh = new THREE.Mesh(geom,fuseMaterial(el.amps));
-    mesh.position.set(p.x,1,p.z);
-    mesh.userData = el;
-    scene.add(mesh);
-    activeMeshes.push(mesh);
-  });
-}
+  const mesh = new THREE.Mesh(geom,fuseMaterial(el.amps));
+  mesh.position.set(p.x,1,p.z);
+  mesh.userData = el;
+  scene.add(mesh);
+  meshes.push(mesh);
+});
 
 /* ================= КЛИК ================= */
 const raycaster = new THREE.Raycaster();
@@ -178,22 +180,12 @@ window.addEventListener('click',e=>{
   mouse.x = (e.clientX/innerWidth)*2-1;
   mouse.y = -(e.clientY/innerHeight)*2+1;
   raycaster.setFromCamera(mouse,camera);
-  const hits = raycaster.intersectObjects(activeMeshes);
-  if(hits.length && hits[0].object.userData){
-    const f = hits[0].object.userData;
+  const hit = raycaster.intersectObjects(meshes);
+  if(hit.length){
+    const f = hit[0].object.userData;
     info.innerHTML = `<b>${f.id}</b><br>${f.amps||'-'} A<br>${f.desc}`;
   }
 });
-
-/* ================= КНОПКИ ================= */
-btnEngine.onclick = ()=>{
-  btnEngine.classList.add('active');
-  btnCabin.classList.remove('active');
-  buildEngine();
-};
-
-/* ================= СТАРТ ================= */
-buildEngine();
 
 /* ================= ЦИКЛ ================= */
 function animate(){
@@ -209,5 +201,6 @@ window.addEventListener('resize',()=>{
   renderer.setSize(innerWidth, innerHeight);
 });
 </script>
+
 </body>
 </html>
