@@ -14,6 +14,18 @@
       overflow-x: hidden;
     }
 
+    /* АДАПТАЦИЯ ДЛЯ iPhone 13–15 */
+    @media (max-width: 430px) {
+      h1 { font-size: 24px; }
+      .subtitle { font-size: 14px; }
+      .container { padding: 14px; }
+      .message { font-size: 16px; }
+      .card { padding: 14px; border-radius: 20px; }
+      video { border-radius: 16px; }
+      .comment { font-size: 14px; }
+      .comment-form button { width: 100%; }
+    }
+
     .snowflake {
       position: fixed;
       top: -10px;
@@ -35,15 +47,8 @@
       text-align: center;
     }
 
-    h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      opacity: 0.9;
-      margin-bottom: 20px;
-    }
+    h1 { font-size: 32px; margin-bottom: 10px; }
+    .subtitle { opacity: 0.9; margin-bottom: 20px; }
 
     .card {
       background: rgba(255,255,255,0.1);
@@ -56,24 +61,16 @@
 
     video {
       width: 100%;
+      max-height: 70vh;
       border-radius: 18px;
       margin-top: 12px;
+      background: black;
     }
 
-    .message {
-      margin-top: 16px;
-      font-size: 18px;
-      line-height: 1.5;
-    }
+    .message { margin-top: 16px; font-size: 18px; line-height: 1.5; }
 
-    .comments {
-      text-align: left;
-      margin-top: 30px;
-    }
-
-    .comments h2 {
-      text-align: center;
-    }
+    .comments { text-align: left; margin-top: 30px; }
+    .comments h2 { text-align: center; }
 
     .comment-form textarea {
       width: 100%;
@@ -88,7 +85,7 @@
 
     .comment-form button {
       margin-top: 10px;
-      padding: 10px 18px;
+      padding: 12px 18px;
       border-radius: 14px;
       border: none;
       background: #ff4d6d;
@@ -105,12 +102,7 @@
       font-size: 15px;
     }
 
-    footer {
-      margin-top: 40px;
-      font-size: 13px;
-      opacity: 0.7;
-      text-align: center;
-    }
+    footer { margin-top: 40px; font-size: 13px; opacity: 0.7; text-align: center; }
   </style>
 </head>
 <body>
@@ -120,7 +112,14 @@
     <div class="subtitle">Пусть 2026 принесёт радость, тепло и много счастливых моментов ✨</div>
 
     <div class="card">
-      <video src="https://raw.githubusercontent.com/Filmhunter7780/Catvscat/main/video.mp4" controls autoplay muted playsinline></video>
+      <video
+        src="https://raw.githubusercontent.com/Filmhunter7780/Catvscat/main/video.mp4"
+        autoplay
+        muted
+        playsinline
+        loop
+        controls
+      ></video>
       <div class="message">
         Пусть в новом году сбудется всё задуманное 💫<br>
         Пусть будет больше улыбок, встреч и поводов радоваться 🎁<br>
