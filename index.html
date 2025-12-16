@@ -13,6 +13,8 @@
       color: #fff;
       overflow-x: hidden;
       text-align: center;
+      display: flex;
+      flex-direction: column;
     }
 
     @media (max-width: 430px) {
@@ -20,12 +22,14 @@
       .subtitle { font-size: 14px; }
       .container { padding: 14px; }
       .message { font-size: 16px; }
+      .game-info { flex-direction: column; gap: 10px; }
     }
 
     .container {
       max-width: 700px;
       margin: 0 auto;
       padding: 24px;
+      flex: 1;
     }
 
     .card {
@@ -80,6 +84,167 @@
         opacity: 0;
       }
     }
+
+    /* Стили для мини-игры */
+    .game-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(0, 20, 40, 0.8);
+      border-radius: 20px;
+    }
+
+    .game-title {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #4fc3f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .game-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background: rgba(0, 10, 30, 0.7);
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 0 auto;
+      border: 2px solid rgba(79, 195, 247, 0.3);
+      cursor: pointer;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding: 0 10px;
+    }
+
+    .score-container, .lives-container {
+      background: rgba(255,255,255,0.1);
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-value {
+      font-weight: bold;
+      color: #4fc3f7;
+      font-size: 24px;
+    }
+
+    .lives-value {
+      font-weight: bold;
+      color: #ff6b6b;
+      font-size: 24px;
+    }
+
+    .game-controls {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      justify-content: center;
+    }
+
+    .game-btn {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #4fc3f7, #2196f3);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    }
+
+    .game-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    }
+
+    .game-btn:active {
+      transform: translateY(0);
+    }
+
+    .game-btn.pause {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+    }
+
+    .game-btn.restart {
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
+    }
+
+    .instructions {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #b0bec5;
+      padding: 10px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+
+    .game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 20, 40, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      display: none;
+      z-index: 100;
+      border: 3px solid #4fc3f7;
+      box-shadow: 0 0 30px rgba(79, 195, 247, 0.5);
+    }
+
+    .game-over h3 {
+      color: #ff6b6b;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .final-score {
+      font-size: 36px;
+      color: #4fc3f7;
+      margin: 15px 0;
+    }
+
+    .bucket {
+      position: absolute;
+      bottom: 10px;
+      width: 80px;
+      height: 40px;
+      background: linear-gradient(135deg, #2196f3, #0d47a1);
+      border-radius: 0 0 40px 40px;
+      transition: left 0.1s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      border: 2px solid #bbdefb;
+    }
+
+    .bucket:before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      right: 10px;
+      height: 15px;
+      background: #1976d2;
+      border-radius: 10px 10px 0 0;
+    }
   </style>
 </head>
 <body>
@@ -103,6 +268,46 @@
       <div class="timer" id="timer"></div>
     </div>
 
+    <!-- Мини-игра -->
+    <div class="game-section card">
+      <div class="game-title">
+        <span>❄️</span> Зимняя игра: Лови снежинки! <span>❄️</span>
+      </div>
+      
+      <div class="game-info">
+        <div class="score-container">
+          <span>Счёт:</span>
+          <span class="score-value" id="score">0</span>
+        </div>
+        <div class="lives-container">
+          <span>❤️ Жизни:</span>
+          <span class="lives-value" id="lives">3</span>
+        </div>
+      </div>
+      
+      <div class="game-container" id="gameContainer">
+        <div class="bucket" id="bucket"></div>
+        <div class="game-over" id="gameOver">
+          <h3>Игра окончена!</h3>
+          <p>Ваш результат:</p>
+          <div class="final-score" id="finalScore">0</div>
+          <p>С Новым годом! 🎄</p>
+          <button class="game-btn restart" onclick="restartGame()">Играть снова</button>
+        </div>
+      </div>
+      
+      <div class="game-controls">
+        <button class="game-btn" id="startBtn" onclick="startGame()">▶️ Начать игру</button>
+        <button class="game-btn pause" id="pauseBtn" onclick="togglePause()" disabled>⏸️ Пауза</button>
+        <button class="game-btn restart" onclick="restartGame()">🔄 Заново</button>
+      </div>
+      
+      <div class="instructions">
+        Управление: двигайте мышкой или пальцем по игровому полю, чтобы ловить снежинки ❄️.
+        Каждая пойманная снежинка = 10 очков. Избегайте пропускать снежинки - теряете жизнь!
+      </div>
+    </div>
+
     <footer>✨ Сделано с новогодним настроением ✨</footer>
   </div>
 
@@ -118,6 +323,9 @@
       music.play().catch(error => {
         console.log("Автовоспроизведение заблокировано. Музыка включится при взаимодействии с сайтом.");
       });
+      
+      // Инициализация игры
+      initGame();
     });
     
     // Включаем музыку при любом взаимодействии пользователя
@@ -129,7 +337,7 @@
       }, { once: true }); // once: true - обработчик сработает только один раз
     });
 
-    // СНЕГ
+    // СНЕГ (декоративный)
     setInterval(() => {
       const s = document.createElement('div');
       s.className = 'snowflake';
@@ -177,6 +385,261 @@
         setTimeout(() => f.remove(), 1000);
       }
     }
+
+    // МИНИ-ИГРА: ЛОВИ СНЕЖИНКИ
+    const gameContainer = document.getElementById('gameContainer');
+    const bucket = document.getElementById('bucket');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const gameOverScreen = document.getElementById('gameOver');
+    const finalScoreEl = document.getElementById('finalScore');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+
+    let gameActive = false;
+    let gamePaused = false;
+    let score = 0;
+    let lives = 3;
+    let snowflakes = [];
+    let bucketX = 50;
+    let gameInterval;
+    let lastSnowflakeTime = 0;
+    const snowflakeInterval = 500; // мс между снежинками
+    const bucketWidth = 80;
+    const bucketHeight = 40;
+
+    // Инициализация игры
+    function initGame() {
+      // Обработка движения мыши
+      gameContainer.addEventListener('mousemove', moveBucket);
+      gameContainer.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = gameContainer.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        moveBucket({ clientX: touch.clientX });
+      });
+      
+      // Обработка клика по игровому полю для паузы
+      gameContainer.addEventListener('click', () => {
+        if (gameActive) togglePause();
+      });
+    }
+
+    // Движение ведра
+    function moveBucket(e) {
+      if (!gameActive || gamePaused) return;
+      
+      const rect = gameContainer.getBoundingClientRect();
+      let x = e.clientX - rect.left - bucketWidth / 2;
+      
+      // Ограничение движения в пределах игрового поля
+      if (x < 0) x = 0;
+      if (x > rect.width - bucketWidth) x = rect.width - bucketWidth;
+      
+      bucketX = x;
+      bucket.style.left = `${x}px`;
+    }
+
+    // Создание снежинки
+    function createSnowflake() {
+      if (!gameActive || gamePaused) return;
+      
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake-game';
+      snowflake.style.position = 'absolute';
+      snowflake.style.top = '0px';
+      snowflake.style.left = `${Math.random() * (gameContainer.offsetWidth - 30)}px`;
+      snowflake.style.fontSize = `${20 + Math.random() * 15}px`;
+      snowflake.textContent = '❄';
+      snowflake.style.userSelect = 'none';
+      snowflake.style.pointerEvents = 'none';
+      snowflake.style.zIndex = '5';
+      
+      gameContainer.appendChild(snowflake);
+      
+      snowflakes.push({
+        element: snowflake,
+        x: parseFloat(snowflake.style.left),
+        y: 0,
+        speed: 1 + Math.random() * 2,
+        size: parseFloat(snowflake.style.fontSize)
+      });
+    }
+
+    // Обновление игрового состояния
+    function updateGame() {
+      if (!gameActive || gamePaused) return;
+      
+      const currentTime = Date.now();
+      
+      // Создание новых снежинок
+      if (currentTime - lastSnowflakeTime > snowflakeInterval) {
+        createSnowflake();
+        lastSnowflakeTime = currentTime;
+      }
+      
+      // Обновление позиций снежинок
+      for (let i = snowflakes.length - 1; i >= 0; i--) {
+        const sf = snowflakes[i];
+        sf.y += sf.speed;
+        sf.element.style.top = `${sf.y}px`;
+        
+        // Проверка столкновения с ведром
+        if (
+          sf.y + sf.size >= gameContainer.offsetHeight - bucketHeight - 10 &&
+          sf.y <= gameContainer.offsetHeight - 10 &&
+          sf.x >= bucketX &&
+          sf.x <= bucketX + bucketWidth
+        ) {
+          // Поймали снежинку
+          sf.element.remove();
+          snowflakes.splice(i, 1);
+          score += 10;
+          scoreEl.textContent = score;
+          
+          // Эффект при пойманной снежинке
+          createParticleEffect(sf.x + sf.size/2, sf.y);
+          continue;
+        }
+        
+        // Проверка выхода за пределы экрана
+        if (sf.y > gameContainer.offsetHeight) {
+          sf.element.remove();
+          snowflakes.splice(i, 1);
+          lives--;
+          livesEl.textContent = lives;
+          
+          if (lives <= 0) {
+            endGame();
+          }
+        }
+      }
+      
+      // Увеличиваем сложность со временем
+      if (score > 0 && score % 100 === 0) {
+        snowflakeInterval = Math.max(200, 500 - Math.floor(score / 100) * 50);
+      }
+    }
+
+    // Эффект частиц при пойманной снежинке
+    function createParticleEffect(x, y) {
+      for (let i = 0; i < 5; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.width = '8px';
+        particle.style.height = '8px';
+        particle.style.backgroundColor = '#4fc3f7';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '10';
+        
+        gameContainer.appendChild(particle);
+        
+        // Анимация частиц
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 3;
+        const dx = Math.cos(angle) * speed;
+        const dy = Math.sin(angle) * speed;
+        
+        let particleX = x;
+        let particleY = y;
+        let opacity = 1;
+        
+        const particleInterval = setInterval(() => {
+          particleX += dx;
+          particleY += dy;
+          opacity -= 0.05;
+          
+          particle.style.left = `${particleX}px`;
+          particle.style.top = `${particleY}px`;
+          particle.style.opacity = opacity;
+          
+          if (opacity <= 0) {
+            clearInterval(particleInterval);
+            particle.remove();
+          }
+        }, 30);
+      }
+    }
+
+    // Начало игры
+    function startGame() {
+      if (gameActive) return;
+      
+      gameActive = true;
+      gamePaused = false;
+      score = 0;
+      lives = 3;
+      snowflakes = [];
+      lastSnowflakeTime = Date.now();
+      
+      scoreEl.textContent = score;
+      livesEl.textContent = lives;
+      gameOverScreen.style.display = 'none';
+      
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      pauseBtn.textContent = '⏸️ Пауза';
+      
+      // Очистка старых снежинок
+      document.querySelectorAll('.snowflake-game').forEach(el => el.remove());
+      
+      // Запуск игрового цикла
+      gameInterval = setInterval(updateGame, 30);
+    }
+
+    // Пауза/продолжение игры
+    function togglePause() {
+      if (!gameActive) return;
+      
+      gamePaused = !gamePaused;
+      pauseBtn.textContent = gamePaused ? '▶️ Продолжить' : '⏸️ Пауза';
+      pauseBtn.classList.toggle('pause', !gamePaused);
+    }
+
+    // Конец игры
+    function endGame() {
+      gameActive = false;
+      clearInterval(gameInterval);
+      
+      finalScoreEl.textContent = score;
+      gameOverScreen.style.display = 'block';
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+    }
+
+    // Перезапуск игры
+    function restartGame() {
+      // Очистка всех снежинок
+      snowflakes.forEach(sf => sf.element.remove());
+      snowflakes = [];
+      
+      document.querySelectorAll('.snowflake-game').forEach(el => el.remove());
+      document.querySelectorAll('.game-container div[style*="background-color: rgb(79, 195, 247)"]').forEach(el => el.remove());
+      
+      // Сброс состояния
+      gameActive = false;
+      gamePaused = false;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      pauseBtn.textContent = '⏸️ Пауза';
+      pauseBtn.classList.add('pause');
+      
+      gameOverScreen.style.display = 'none';
+      
+      // Остановка игрового цикла
+      if (gameInterval) {
+        clearInterval(gameInterval);
+      }
+    }
+
+    // Автоматический старт игры через 5 секунд после загрузки страницы
+    setTimeout(() => {
+      startGame();
+    }, 5000);
   </script>
 </body>
 </html>
