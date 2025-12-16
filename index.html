@@ -64,6 +64,7 @@
       user-select: none;
       pointer-events: none;
       animation: fall linear infinite;
+      text-shadow: 0 0 5px rgba(255,255,255,0.8);
     }
 
     @keyframes fall {
@@ -107,13 +108,21 @@
     .game-container {
       position: relative;
       width: 100%;
-      height: 300px;
+      height: 400px;
       background: rgba(0, 10, 30, 0.7);
       border-radius: 15px;
       overflow: hidden;
       margin: 0 auto;
-      border: 2px solid rgba(79, 195, 247, 0.3);
+      border: 3px solid rgba(79, 195, 247, 0.5);
       cursor: pointer;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: transparent;
     }
 
     .game-info {
@@ -125,25 +134,28 @@
     }
 
     .score-container, .lives-container {
-      background: rgba(255,255,255,0.1);
-      padding: 10px 20px;
+      background: linear-gradient(135deg, rgba(79, 195, 247, 0.3), rgba(33, 150, 243, 0.3));
+      padding: 10px 25px;
       border-radius: 50px;
       font-size: 18px;
       display: flex;
       align-items: center;
       gap: 8px;
+      border: 2px solid rgba(79, 195, 247, 0.5);
     }
 
     .score-value {
       font-weight: bold;
       color: #4fc3f7;
-      font-size: 24px;
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
     }
 
     .lives-value {
       font-weight: bold;
       color: #ff6b6b;
-      font-size: 24px;
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
     }
 
     .game-controls {
@@ -154,7 +166,7 @@
     }
 
     .game-btn {
-      padding: 10px 25px;
+      padding: 12px 30px;
       border: none;
       border-radius: 50px;
       background: linear-gradient(135deg, #4fc3f7, #2196f3);
@@ -163,6 +175,7 @@
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+      font-weight: bold;
     }
 
     .game-btn:hover {
@@ -186,9 +199,10 @@
       margin-top: 15px;
       font-size: 14px;
       color: #b0bec5;
-      padding: 10px;
-      background: rgba(0,0,0,0.2);
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
       border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .game-over {
@@ -196,49 +210,29 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 20, 40, 0.95);
-      padding: 30px;
+      background: linear-gradient(135deg, rgba(0, 30, 60, 0.95), rgba(0, 20, 40, 0.95));
+      padding: 40px;
       border-radius: 20px;
       text-align: center;
       display: none;
       z-index: 100;
       border: 3px solid #4fc3f7;
-      box-shadow: 0 0 30px rgba(79, 195, 247, 0.5);
+      box-shadow: 0 0 50px rgba(79, 195, 247, 0.7);
+      min-width: 300px;
     }
 
     .game-over h3 {
       color: #ff6b6b;
-      font-size: 28px;
+      font-size: 32px;
       margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
     }
 
     .final-score {
-      font-size: 36px;
+      font-size: 48px;
       color: #4fc3f7;
-      margin: 15px 0;
-    }
-
-    .bucket {
-      position: absolute;
-      bottom: 10px;
-      width: 80px;
-      height: 40px;
-      background: linear-gradient(135deg, #2196f3, #0d47a1);
-      border-radius: 0 0 40px 40px;
-      transition: left 0.1s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-      border: 2px solid #bbdefb;
-    }
-
-    .bucket:before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: 10px;
-      right: 10px;
-      height: 15px;
-      background: #1976d2;
-      border-radius: 10px 10px 0 0;
+      margin: 20px 0;
+      text-shadow: 0 0 15px rgba(79, 195, 247, 0.7);
     }
 
     /* Стили для топ-листов */
@@ -518,8 +512,8 @@
         </div>
       </div>
       
-      <div class="game-container" id="gameContainer">
-        <div class="bucket" id="bucket"></div>
+      <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
         <div class="game-over" id="gameOver">
           <h3>Игра окончена!</h3>
           <p>Ваш результат:</p>
@@ -550,9 +544,7 @@
     
     // Пытаемся включить музыку при загрузке страницы
     document.addEventListener('DOMContentLoaded', () => {
-      music.volume = 0.5; // Устанавливаем громкость 50%
-      
-      // Включаем воспроизведение (с обработкой ошибок)
+      music.volume = 0.5;
       music.play().catch(error => {
         console.log("Автовоспроизведение заблокировано. Музыка включится при взаимодействии с сайтом.");
       });
@@ -567,10 +559,10 @@
         if (music.paused) {
           music.play().catch(e => console.log("Не удалось включить музыку:", e));
         }
-      }, { once: true }); // once: true - обработчик сработает только один раз
+      }, { once: true });
     });
 
-    // СНЕГ (декоративный)
+    // СНЕГ (декоративный фон)
     setInterval(() => {
       const s = document.createElement('div');
       s.className = 'snowflake';
@@ -578,6 +570,7 @@
       s.style.left = Math.random() * 100 + 'vw';
       s.style.fontSize = 12 + Math.random() * 18 + 'px';
       s.style.animationDuration = 5 + Math.random() * 5 + 's';
+      s.style.opacity = 0.7 + Math.random() * 0.3;
       document.body.appendChild(s);
       setTimeout(() => s.remove(), 10000);
     }, 200);
@@ -591,7 +584,6 @@
       if (diff <= 0) {
         timerEl.textContent = '🎆 С НОВЫМ ГОДОМ! 🎆';
         startFireworks();
-        // При наступлении Нового года включаем музыку на полную громкость
         music.volume = 1.0;
         music.play().catch(e => console.log("Не удалось включить музыку:", e));
         return;
@@ -619,42 +611,57 @@
       }
     }
 
-    // МИНИ-ИГРА: ЛОВИ СНЕЖИНКИ
-    const gameContainer = document.getElementById('gameContainer');
-    const bucket = document.getElementById('bucket');
+    // МИНИ-ИГРА: ЛОВИ СНЕЖИНКИ (Canvas версия)
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
     const scoreEl = document.getElementById('score');
     const livesEl = document.getElementById('lives');
     const gameOverScreen = document.getElementById('gameOver');
     const finalScoreEl = document.getElementById('finalScore');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
+    const gameContainer = document.querySelector('.game-container');
 
+    // Установка размеров canvas
+    function resizeCanvas() {
+      canvas.width = gameContainer.clientWidth;
+      canvas.height = gameContainer.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Переменные игры
     let gameActive = false;
     let gamePaused = false;
     let score = 0;
     let lives = 3;
-    let snowflakes = [];
-    let bucketX = 50;
-    let gameInterval;
-    let lastSnowflakeTime = 0;
-    let snowflakeInterval = 500; // мс между снежинками
+    let bucketX = canvas.width / 2 - 40;
     const bucketWidth = 80;
-    const bucketHeight = 40;
+    const bucketHeight = 60;
+    
+    // Снежинки
+    let snowflakes = [];
+    let lastSnowflakeTime = 0;
+    let snowflakeInterval = 600; // мс между снежинками
+    let animationId = null;
+    let lastTime = 0;
 
     // Инициализация игры
     function initGame() {
       // Обработка движения мыши
-      gameContainer.addEventListener('mousemove', moveBucket);
-      gameContainer.addEventListener('touchmove', (e) => {
+      canvas.addEventListener('mousemove', moveBucket);
+      canvas.addEventListener('touchmove', (e) => {
         e.preventDefault();
         const touch = e.touches[0];
-        const rect = gameContainer.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        moveBucket({ clientX: touch.clientX });
-      });
+        const rect = canvas.getBoundingClientRect();
+        bucketX = touch.clientX - rect.left - bucketWidth / 2;
+        // Ограничение движения
+        if (bucketX < 0) bucketX = 0;
+        if (bucketX > canvas.width - bucketWidth) bucketX = canvas.width - bucketWidth;
+      }, { passive: false });
       
-      // Обработка клика по игровому полю для паузы
-      gameContainer.addEventListener('click', () => {
+      // Обработка клика для паузы
+      canvas.addEventListener('click', () => {
         if (gameActive) togglePause();
       });
     }
@@ -663,138 +670,240 @@
     function moveBucket(e) {
       if (!gameActive || gamePaused) return;
       
-      const rect = gameContainer.getBoundingClientRect();
-      let x = e.clientX - rect.left - bucketWidth / 2;
+      const rect = canvas.getBoundingClientRect();
+      bucketX = e.clientX - rect.left - bucketWidth / 2;
       
-      // Ограничение движения в пределах игрового поля
-      if (x < 0) x = 0;
-      if (x > rect.width - bucketWidth) x = rect.width - bucketWidth;
-      
-      bucketX = x;
-      bucket.style.left = `${x}px`;
+      // Ограничение движения
+      if (bucketX < 0) bucketX = 0;
+      if (bucketX > canvas.width - bucketWidth) bucketX = canvas.width - bucketWidth;
     }
 
-    // Создание снежинки
-    function createSnowflake() {
-      if (!gameActive || gamePaused) return;
+    // Класс снежинки
+    class Snowflake {
+      constructor(x, size) {
+        this.x = x;
+        this.y = -size;
+        this.size = size;
+        this.speed = 2 + Math.random() * 3;
+        this.opacity = 0.8 + Math.random() * 0.2;
+        this.wobble = Math.random() * 0.5;
+        this.wobbleSpeed = 0.05 + Math.random() * 0.05;
+        this.wobbleOffset = Math.random() * Math.PI * 2;
+      }
       
-      const snowflake = document.createElement('div');
-      snowflake.className = 'snowflake-game';
-      snowflake.style.position = 'absolute';
-      snowflake.style.top = '0px';
-      snowflake.style.left = `${Math.random() * (gameContainer.offsetWidth - 30)}px`;
-      snowflake.style.fontSize = `${20 + Math.random() * 15}px`;
-      snowflake.textContent = '❄';
-      snowflake.style.userSelect = 'none';
-      snowflake.style.pointerEvents = 'none';
-      snowflake.style.zIndex = '5';
+      update(deltaTime) {
+        this.y += this.speed * (deltaTime / 16);
+        this.x += Math.sin(Date.now() * this.wobbleSpeed + this.wobbleOffset) * this.wobble;
+        
+        // Ограничение по горизонтали
+        if (this.x < 0) this.x = 0;
+        if (this.x > canvas.width) this.x = canvas.width;
+        
+        return this.y > canvas.height;
+      }
       
-      gameContainer.appendChild(snowflake);
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#4fc3f7';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        
+        // Рисуем снежинку (шестиугольник)
+        ctx.beginPath();
+        const radius = this.size / 2;
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const x = this.x + Math.cos(angle) * radius;
+          const y = this.y + Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        
+        // Центр снежинки
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, radius * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+      }
       
-      snowflakes.push({
-        element: snowflake,
-        x: parseFloat(snowflake.style.left),
-        y: 0,
-        speed: 1 + Math.random() * 2,
-        size: parseFloat(snowflake.style.fontSize)
+      checkCollision() {
+        return (
+          this.y + this.size >= canvas.height - bucketHeight &&
+          this.y <= canvas.height &&
+          this.x >= bucketX &&
+          this.x <= bucketX + bucketWidth
+        );
+      }
+    }
+
+    // Ведро
+    function drawBucket() {
+      ctx.save();
+      
+      // Основное ведро
+      ctx.fillStyle = '#2196f3';
+      ctx.shadowColor = '#0d47a1';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 5;
+      
+      ctx.beginPath();
+      ctx.moveTo(bucketX, canvas.height);
+      ctx.lineTo(bucketX + bucketWidth, canvas.height);
+      ctx.lineTo(bucketX + bucketWidth - 20, canvas.height - bucketHeight);
+      ctx.lineTo(bucketX + 20, canvas.height - bucketHeight);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Верх ведра
+      ctx.fillStyle = '#1976d2';
+      ctx.beginPath();
+      ctx.ellipse(
+        bucketX + bucketWidth / 2,
+        canvas.height - bucketHeight,
+        bucketWidth / 2 - 10,
+        10,
+        0, 0, Math.PI * 2
+      );
+      ctx.fill();
+      
+      // Внутренность ведра
+      ctx.fillStyle = '#64b5f6';
+      ctx.beginPath();
+      ctx.moveTo(bucketX + 20, canvas.height - bucketHeight);
+      ctx.lineTo(bucketX + bucketWidth - 20, canvas.height - bucketHeight);
+      ctx.lineTo(bucketX + bucketWidth - 15, canvas.height - 15);
+      ctx.lineTo(bucketX + 15, canvas.height - 15);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Обводка
+      ctx.strokeStyle = '#bbdefb';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+
+    // Частицы
+    function createParticles(x, y, count) {
+      for (let i = 0; i < count; i++) {
+        const particle = {
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          life: 1.0,
+          size: 3 + Math.random() * 4,
+          color: `hsl(${200 + Math.random() * 40}, 100%, 70%)`
+        };
+        
+        // Временное хранение частиц
+        if (!window.particles) window.particles = [];
+        window.particles.push(particle);
+      }
+    }
+
+    // Обновление частиц
+    function updateParticles() {
+      if (!window.particles) return;
+      
+      for (let i = window.particles.length - 1; i >= 0; i--) {
+        const p = window.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.1; // гравитация
+        p.life -= 0.02;
+        
+        if (p.life <= 0) {
+          window.particles.splice(i, 1);
+        }
+      }
+    }
+
+    // Отрисовка частиц
+    function drawParticles() {
+      if (!window.particles) return;
+      
+      ctx.save();
+      window.particles.forEach(p => {
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
       });
+      ctx.restore();
     }
 
-    // Обновление игрового состояния
-    function updateGame() {
-      if (!gameActive || gamePaused) return;
+    // Игровой цикл
+    function gameLoop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
       
-      const currentTime = Date.now();
-      
-      // Создание новых снежинок
-      if (currentTime - lastSnowflakeTime > snowflakeInterval) {
-        createSnowflake();
-        lastSnowflakeTime = currentTime;
-      }
-      
-      // Обновление позиций снежинок
-      for (let i = snowflakes.length - 1; i >= 0; i--) {
-        const sf = snowflakes[i];
-        sf.y += sf.speed;
-        sf.element.style.top = `${sf.y}px`;
+      if (!gamePaused && gameActive) {
+        // Очистка canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Проверка столкновения с ведром
-        if (
-          sf.y + sf.size >= gameContainer.offsetHeight - bucketHeight - 10 &&
-          sf.y <= gameContainer.offsetHeight - 10 &&
-          sf.x >= bucketX &&
-          sf.x <= bucketX + bucketWidth
-        ) {
-          // Поймали снежинку
-          sf.element.remove();
-          snowflakes.splice(i, 1);
-          score += 10;
-          scoreEl.textContent = score;
+        // Создание новых снежинок
+        if (timestamp - lastSnowflakeTime > snowflakeInterval) {
+          const size = 15 + Math.random() * 15;
+          snowflakes.push(new Snowflake(Math.random() * (canvas.width - size * 2) + size, size));
+          lastSnowflakeTime = timestamp;
           
-          // Эффект при пойманной снежинке
-          createParticleEffect(sf.x + sf.size/2, sf.y);
-          continue;
-        }
-        
-        // Проверка выхода за пределы экрана
-        if (sf.y > gameContainer.offsetHeight) {
-          sf.element.remove();
-          snowflakes.splice(i, 1);
-          lives--;
-          livesEl.textContent = lives;
-          
-          if (lives <= 0) {
-            endGame();
+          // Увеличение сложности
+          if (score > 0 && score % 100 === 0) {
+            snowflakeInterval = Math.max(300, 600 - Math.floor(score / 100) * 50);
           }
         }
+        
+        // Обновление и отрисовка снежинок
+        for (let i = snowflakes.length - 1; i >= 0; i--) {
+          const sf = snowflakes[i];
+          
+          if (sf.update(deltaTime)) {
+            // Снежинка упала
+            snowflakes.splice(i, 1);
+            lives--;
+            livesEl.textContent = lives;
+            
+            if (lives <= 0) {
+              endGame();
+              return;
+            }
+            continue;
+          }
+          
+          if (sf.checkCollision()) {
+            // Поймали снежинку
+            snowflakes.splice(i, 1);
+            score += 10;
+            scoreEl.textContent = score;
+            createParticles(sf.x, sf.y, 8);
+            continue;
+          }
+          
+          sf.draw();
+        }
+        
+        // Обновление частиц
+        updateParticles();
+        
+        // Отрисовка ведра
+        drawBucket();
+        
+        // Отрисовка частиц
+        drawParticles();
       }
       
-      // Увеличиваем сложность со временем
-      if (score > 0 && score % 100 === 0) {
-        snowflakeInterval = Math.max(200, 500 - Math.floor(score / 100) * 50);
-      }
-    }
-
-    // Эффект частиц при пойманной снежинке
-    function createParticleEffect(x, y) {
-      for (let i = 0; i < 5; i++) {
-        const particle = document.createElement('div');
-        particle.style.position = 'absolute';
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        particle.style.width = '8px';
-        particle.style.height = '8px';
-        particle.style.backgroundColor = '#4fc3f7';
-        particle.style.borderRadius = '50%';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '10';
-        
-        gameContainer.appendChild(particle);
-        
-        // Анимация частиц
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 2 + Math.random() * 3;
-        const dx = Math.cos(angle) * speed;
-        const dy = Math.sin(angle) * speed;
-        
-        let particleX = x;
-        let particleY = y;
-        let opacity = 1;
-        
-        const particleInterval = setInterval(() => {
-          particleX += dx;
-          particleY += dy;
-          opacity -= 0.05;
-          
-          particle.style.left = `${particleX}px`;
-          particle.style.top = `${particleY}px`;
-          particle.style.opacity = opacity;
-          
-          if (opacity <= 0) {
-            clearInterval(particleInterval);
-            particle.remove();
-          }
-        }, 30);
+      if (gameActive) {
+        animationId = requestAnimationFrame(gameLoop);
       }
     }
 
@@ -807,8 +916,9 @@
       score = 0;
       lives = 3;
       snowflakes = [];
-      lastSnowflakeTime = Date.now();
-      snowflakeInterval = 500;
+      window.particles = [];
+      lastSnowflakeTime = 0;
+      snowflakeInterval = 600;
       
       scoreEl.textContent = score;
       livesEl.textContent = lives;
@@ -818,11 +928,8 @@
       pauseBtn.disabled = false;
       pauseBtn.textContent = '⏸️ Пауза';
       
-      // Очистка старых снежинок
-      document.querySelectorAll('.snowflake-game').forEach(el => el.remove());
-      
-      // Запуск игрового цикла
-      gameInterval = setInterval(updateGame, 30);
+      lastTime = 0;
+      animationId = requestAnimationFrame(gameLoop);
     }
 
     // Пауза/продолжение игры
@@ -832,12 +939,21 @@
       gamePaused = !gamePaused;
       pauseBtn.textContent = gamePaused ? '▶️ Продолжить' : '⏸️ Пауза';
       pauseBtn.classList.toggle('pause', !gamePaused);
+      
+      if (!gamePaused) {
+        lastTime = 0;
+        animationId = requestAnimationFrame(gameLoop);
+      }
     }
 
     // Конец игры
     function endGame() {
       gameActive = false;
-      clearInterval(gameInterval);
+      gamePaused = false;
+      
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
       
       finalScoreEl.textContent = score;
       gameOverScreen.style.display = 'block';
@@ -847,14 +963,10 @@
 
     // Перезапуск игры
     function restartGame() {
-      // Очистка всех снежинок
-      snowflakes.forEach(sf => sf.element.remove());
-      snowflakes = [];
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
       
-      document.querySelectorAll('.snowflake-game').forEach(el => el.remove());
-      document.querySelectorAll('.game-container div[style*="background-color: rgb(79, 195, 247)"]').forEach(el => el.remove());
-      
-      // Сброс состояния
       gameActive = false;
       gamePaused = false;
       startBtn.disabled = false;
@@ -864,16 +976,14 @@
       
       gameOverScreen.style.display = 'none';
       
-      // Остановка игрового цикла
-      if (gameInterval) {
-        clearInterval(gameInterval);
-      }
+      // Очистка canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Автоматический старт игры через 5 секунд после загрузки страницы
+    // Автоматический старт игры через 3 секунды
     setTimeout(() => {
       startGame();
-    }, 5000);
+    }, 3000);
   </script>
 </body>
 </html>
