@@ -23,15 +23,24 @@
       width: 100%;
       text-align: center;
     }
-    h1 {
-      margin-top: 0;
-      font-size: 24px;
+    h1 { margin-top: 0; font-size: 24px; }
+    p { color: #555; }
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin-top: 12px;
     }
-    p {
-      color: #555;
-    }
-    input[type="file"] {
-      margin: 16px 0;
+    button {
+      margin-top: 12px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 12px;
+      background: #ff6f91;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
     }
     video {
       width: 100%;
@@ -49,30 +58,25 @@
 <body>
   <div class="card">
     <h1>🎉 Видео-поздравление 🎉</h1>
-    <p>Загрузите своё видео, чтобы показать его друзьям</p>
+    <p>Вставьте ссылку на видео (GitHub Pages)</p>
 
-    <input type="file" accept="video/*" id="videoInput" />
+    <input type="text" id="videoUrl" placeholder="https://username.github.io/repo/video.mp4" />
+    <button onclick="playVideo()">▶️ Воспроизвести</button>
 
-    <video id="videoPlayer" controls></video>
+    <video id="videoPlayer" controls autoplay></video>
 
-    <footer>
-      Сделано с ❤️ для друзей
-    </footer>
+    <footer>Сделано с ❤️ для друзей</footer>
   </div>
 
   <script>
-    const input = document.getElementById('videoInput');
-    const video = document.getElementById('videoPlayer');
-
-    input.addEventListener('change', () => {
-      const file = input.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        video.src = url;
-        video.style.display = 'block';
-        video.play();
-      }
-    });
+    function playVideo() {
+      const url = document.getElementById('videoUrl').value.trim();
+      const video = document.getElementById('videoPlayer');
+      if (!url) return;
+      video.src = url;
+      video.style.display = 'block';
+      video.play();
+    }
   </script>
 </body>
 </html>
