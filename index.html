@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎄 Новогоднее поздравление 🎄</title>
+  <title>🎄 С Новым годом! 🎄</title>
   <style>
     body {
       margin: 0;
@@ -12,25 +12,50 @@
       font-family: 'Segoe UI', Arial, sans-serif;
       color: #fff;
       overflow-x: hidden;
+      text-align: center;
     }
 
-    /* АДАПТАЦИЯ ДЛЯ iPhone 13–15 */
     @media (max-width: 430px) {
       h1 { font-size: 24px; }
       .subtitle { font-size: 14px; }
       .container { padding: 14px; }
       .message { font-size: 16px; }
-      .card { padding: 14px; border-radius: 20px; }
-      video { border-radius: 16px; }
-      .comment { font-size: 14px; }
-      .comment-form button { width: 100%; }
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      margin-bottom: 24px;
+    }
+
+    video {
+      width: 100%;
+      max-height: 70vh;
+      border-radius: 18px;
+      background: black;
+    }
+
+    .message { margin-top: 16px; font-size: 18px; }
+
+    .timer {
+      font-size: 22px;
+      margin-top: 12px;
+      letter-spacing: 1px;
     }
 
     .snowflake {
       position: fixed;
       top: -10px;
       color: white;
-      font-size: 1em;
       user-select: none;
       pointer-events: none;
       animation: fall linear infinite;
@@ -40,149 +65,118 @@
       to { transform: translateY(110vh); }
     }
 
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 24px;
-      text-align: center;
+    .firework {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+      animation: explode 1s ease-out forwards;
     }
 
-    h1 { font-size: 32px; margin-bottom: 10px; }
-    .subtitle { opacity: 0.9; margin-bottom: 20px; }
-
-    .card {
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      margin-bottom: 32px;
+    @keyframes explode {
+      to {
+        transform: translate(var(--x), var(--y));
+        opacity: 0;
+      }
     }
 
-    video {
-      width: 100%;
-      max-height: 70vh;
-      border-radius: 18px;
-      margin-top: 12px;
-      background: black;
-    }
-
-    .message { margin-top: 16px; font-size: 18px; line-height: 1.5; }
-
-    .comments { text-align: left; margin-top: 30px; }
-    .comments h2 { text-align: center; }
-
-    .comment-form textarea {
-      width: 100%;
-      min-height: 70px;
-      border-radius: 14px;
-      border: none;
-      padding: 12px;
-      margin-top: 10px;
-      resize: vertical;
-      font-family: inherit;
-    }
-
-    .comment-form button {
-      margin-top: 10px;
-      padding: 12px 18px;
-      border-radius: 14px;
+    .sound-btn {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 12px 16px;
+      border-radius: 999px;
       border: none;
       background: #ff4d6d;
       color: white;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
+      z-index: 10;
     }
-
-    .comment {
-      background: rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 10px 14px;
-      margin-top: 10px;
-      font-size: 15px;
-    }
-
-    footer { margin-top: 40px; font-size: 13px; opacity: 0.7; text-align: center; }
   </style>
 </head>
 <body>
 
+  <button class="sound-btn" id="soundBtn">🔊 Включить звук</button>
+
+  <audio id="bgMusic" loop muted autoplay>
+    <source src="https://cdn.pixabay.com/audio/2022/12/06/audio_5b3b3e6c3e.mp3" type="audio/mpeg">
+  </audio>
+
   <div class="container">
     <h1>🎄 С Новым годом, друзья! 🎄</h1>
-    <div class="subtitle">Пусть 2026 принесёт радость, тепло и много счастливых моментов ✨</div>
+    <div class="subtitle">Пусть новый год принесёт счастье, тепло и радость ✨</div>
 
     <div class="card">
-      <video
-        src="https://raw.githubusercontent.com/Filmhunter7780/Catvscat/main/video.mp4"
-        autoplay
-        muted
-        playsinline
-        loop
-        controls
-      ></video>
-      <div class="message">
-        Пусть в новом году сбудется всё задуманное 💫<br>
-        Пусть будет больше улыбок, встреч и поводов радоваться 🎁<br>
-        Спасибо, что вы есть ❤️
-      </div>
+      <video src="https://raw.githubusercontent.com/Filmhunter7780/Catvscat/main/video.mp4"
+        autoplay muted playsinline loop controls></video>
+      <div class="message">Спасибо, что вы рядом ❤️ Пусть всё задуманное сбудется!</div>
     </div>
 
-    <div class="card comments">
-      <h2>💬 Анонимные пожелания</h2>
-      <div class="comment-form">
-        <textarea id="commentInput" placeholder="Напиши тёплое пожелание..."></textarea>
-        <button onclick="addComment()">Отправить</button>
-      </div>
-      <div id="commentsList"></div>
+    <div class="card">
+      <h2>⏳ До Нового года осталось</h2>
+      <div class="timer" id="timer"></div>
     </div>
 
-    <footer>
-      ✨ Сделано с теплом и новогодним настроением ✨
-    </footer>
+    <footer>✨ Сделано с новогодним настроением ✨</footer>
   </div>
 
   <script>
     // СНЕГ
-    function createSnowflake() {
-      const snowflake = document.createElement('div');
-      snowflake.className = 'snowflake';
-      snowflake.innerHTML = '❄';
-      snowflake.style.left = Math.random() * 100 + 'vw';
-      snowflake.style.animationDuration = 5 + Math.random() * 5 + 's';
-      snowflake.style.opacity = Math.random();
-      snowflake.style.fontSize = 12 + Math.random() * 18 + 'px';
-      document.body.appendChild(snowflake);
-      setTimeout(() => snowflake.remove(), 10000);
+    setInterval(() => {
+      const s = document.createElement('div');
+      s.className = 'snowflake';
+      s.textContent = '❄';
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.fontSize = 12 + Math.random() * 18 + 'px';
+      s.style.animationDuration = 5 + Math.random() * 5 + 's';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 10000);
+    }, 200);
+
+    // ТАЙМЕР
+    const timerEl = document.getElementById('timer');
+    function updateTimer() {
+      const now = new Date();
+      const nextYear = new Date(now.getFullYear() + 1, 0, 1);
+      const diff = nextYear - now;
+      if (diff <= 0) {
+        timerEl.textContent = '🎆 С НОВЫМ ГОДОМ! 🎆';
+        startFireworks();
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor(diff / 3600000) % 24;
+      const m = Math.floor(diff / 60000) % 60;
+      const s = Math.floor(diff / 1000) % 60;
+      timerEl.textContent = `${d}д ${h}ч ${m}м ${s}с`;
     }
-    setInterval(createSnowflake, 200);
+    setInterval(updateTimer, 1000);
+    updateTimer();
 
-    // КОММЕНТАРИИ (локально)
-    const commentsKey = 'ny_comments';
-    const commentsList = document.getElementById('commentsList');
-
-    function loadComments() {
-      const comments = JSON.parse(localStorage.getItem(commentsKey) || '[]');
-      commentsList.innerHTML = '';
-      comments.forEach(text => {
-        const div = document.createElement('div');
-        div.className = 'comment';
-        div.textContent = text;
-        commentsList.appendChild(div);
-      });
+    // ФЕЙЕРВЕРК
+    function startFireworks() {
+      for (let i = 0; i < 150; i++) {
+        const f = document.createElement('div');
+        f.className = 'firework';
+        f.style.left = '50vw';
+        f.style.top = '50vh';
+        f.style.setProperty('--x', (Math.random() - 0.5) * 400 + 'px');
+        f.style.setProperty('--y', (Math.random() - 0.5) * 400 + 'px');
+        document.body.appendChild(f);
+        setTimeout(() => f.remove(), 1000);
+      }
     }
 
-    function addComment() {
-      const input = document.getElementById('commentInput');
-      const text = input.value.trim();
-      if (!text) return;
-      const comments = JSON.parse(localStorage.getItem(commentsKey) || '[]');
-      comments.push(text);
-      localStorage.setItem(commentsKey, JSON.stringify(comments));
-      input.value = '';
-      loadComments();
-    }
-
-    loadComments();
+    // ЗВУК (iOS)
+    const music = document.getElementById('bgMusic');
+    const btn = document.getElementById('soundBtn');
+    btn.addEventListener('click', () => {
+      music.muted = false;
+      music.play();
+      btn.style.display = 'none';
+    });
   </script>
 </body>
 </html>
