@@ -80,44 +80,12 @@
         opacity: 0;
       }
     }
-
-    .sound-btn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      padding: 12px 16px;
-      border-radius: 999px;
-      border: none;
-      background: #ff4d6d;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: transform 0.2s, background 0.2s;
-    }
-
-    .sound-btn:hover {
-      transform: scale(1.05);
-      background: #ff3355;
-    }
-
-    .sound-btn.muted {
-      background: #4CAF50;
-    }
-
-    .sound-btn.muted:hover {
-      background: #45a049;
-    }
   </style>
 </head>
 <body>
 
-  <button class="sound-btn" id="soundBtn">🔇 Включить звук</button>
-
-  <audio id="bgMusic" loop preload="metadata">
+  <audio id="bgMusic" loop>
     <source src="https://cdn.pixabay.com/audio/2022/12/06/audio_5b3b3e6c3e.mp3" type="audio/mpeg">
-    Ваш браузер не поддерживает аудио элемент.
   </audio>
 
   <div class="container">
@@ -125,7 +93,7 @@
     <div class="subtitle">Пусть новый год принесёт счастье, тепло и радость ✨</div>
 
     <div class="card">
-      <video id="newYearVideo" src="https://raw.githubusercontent.com/Filmhunter7780/Catvscat/main/video.mp4"
+      <video src="https://raw.githubusercontent.com/Filmhunter7780/Catvscat/main/video.mp4"
         autoplay muted playsinline loop controls></video>
       <div class="message">Спасибо, что вы рядом ❤️ Пусть всё задуманное сбудется!</div>
     </div>
@@ -139,61 +107,28 @@
   </div>
 
   <script>
-    // Инициализация элементов
+    // Автоматическое включение фоновой музыки
     const music = document.getElementById('bgMusic');
-    const btn = document.getElementById('soundBtn');
-    const video = document.getElementById('newYearVideo');
     
-    // Флаг состояния звука
-    let isSoundEnabled = false;
-    
-    // Функция включения/выключения звука
-    function toggleSound() {
-      if (!isSoundEnabled) {
-        // Включаем звук
-        music.volume = 0.7; // Устанавливаем громкость на 70%
-        
-        // Пытаемся воспроизвести музыку
-        music.play().then(() => {
-          console.log("Музыка включена");
-          isSoundEnabled = true;
-          btn.textContent = '🔊 Выключить звук';
-          btn.classList.add('muted');
-          
-          // Размутируем видео
-          video.muted = false;
-        }).catch(error => {
-          console.error("Ошибка воспроизведения музыки:", error);
-          alert("Для включения звука разрешите автовоспроизведение в браузере или нажмите на страницу перед включением звука.");
-        });
-      } else {
-        // Выключаем звук
-        music.pause();
-        music.currentTime = 0;
-        isSoundEnabled = false;
-        btn.textContent = '🔇 Включить звук';
-        btn.classList.remove('muted');
-        
-        // Мутируем видео
-        video.muted = true;
-      }
-    }
-    
-    // Обработчик клика по кнопке
-    btn.addEventListener('click', toggleSound);
-    
-    // Обработчик клика по странице (для браузеров, требующих взаимодействия)
-    document.addEventListener('click', function initAudio() {
-      // Этот обработчик сработает один раз при любом клике
-      if (!isSoundEnabled) {
-        // Просто инициализируем аудио, но не включаем
-        music.load();
-        console.log("Аудио инициализировано после взаимодействия с пользователем");
-      }
-      // Удаляем обработчик после первого клика
-      document.removeEventListener('click', initAudio);
+    // Пытаемся включить музыку при загрузке страницы
+    document.addEventListener('DOMContentLoaded', () => {
+      music.volume = 0.5; // Устанавливаем громкость 50%
+      
+      // Включаем воспроизведение (с обработкой ошибок)
+      music.play().catch(error => {
+        console.log("Автовоспроизведение заблокировано. Музыка включится при взаимодействии с сайтом.");
+      });
     });
     
+    // Включаем музыку при любом взаимодействии пользователя
+    ['click', 'touchstart', 'keydown'].forEach(eventType => {
+      document.addEventListener(eventType, () => {
+        if (music.paused) {
+          music.play().catch(e => console.log("Не удалось включить музыку:", e));
+        }
+      }, { once: true }); // once: true - обработчик сработает только один раз
+    });
+
     // СНЕГ
     setInterval(() => {
       const s = document.createElement('div');
@@ -215,6 +150,9 @@
       if (diff <= 0) {
         timerEl.textContent = '🎆 С НОВЫМ ГОДОМ! 🎆';
         startFireworks();
+        // При наступлении Нового года включаем музыку на полную громкость
+        music.volume = 1.0;
+        music.play().catch(e => console.log("Не удалось включить музыку:", e));
         return;
       }
       const d = Math.floor(diff / 86400000);
@@ -237,19 +175,6 @@
         f.style.setProperty('--y', (Math.random() - 0.5) * 400 + 'px');
         document.body.appendChild(f);
         setTimeout(() => f.remove(), 1000);
-      }
-      
-      // Включаем музыку автоматически при наступлении Нового года
-      if (!isSoundEnabled) {
-        setTimeout(() => {
-          music.volume = 1.0;
-          music.play().then(() => {
-            isSoundEnabled = true;
-            btn.textContent = '🔊 Выключить звук';
-            btn.classList.add('muted');
-            video.muted = false;
-          });
-        }, 500);
       }
     }
   </script>
