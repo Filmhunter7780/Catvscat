@@ -2,59 +2,137 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>🎄 С Новым годом! 🎄</title>
   <style>
-    body {
+    /* Базовые стили для предотвращения скролла */
+    html, body {
       margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      position: fixed; /* Предотвращает скролл на iOS */
+      overscroll-behavior: none; /* Убирает эффект подпрыгивания */
+      -webkit-overflow-scrolling: auto; /* Для iOS */
+    }
+
+    body {
       min-height: 100vh;
       background: linear-gradient(180deg, #00111f, #002b4f);
       font-family: 'Segoe UI', Arial, sans-serif;
       color: #fff;
-      overflow-x: hidden;
       text-align: center;
       display: flex;
       flex-direction: column;
+      touch-action: manipulation; /* Оптимизация для касаний */
+    }
+
+    /* Специальные стили для iOS */
+    @supports (-webkit-touch-callout: none) {
+      body {
+        height: -webkit-fill-available;
+        min-height: -webkit-fill-available;
+      }
     }
 
     @media (max-width: 430px) {
-      h1 { font-size: 24px; }
-      .subtitle { font-size: 14px; }
-      .container { padding: 14px; }
-      .message { font-size: 16px; }
-      .game-info { flex-direction: column; gap: 10px; }
-      .tops-container { grid-template-columns: 1fr; }
+      h1 { 
+        font-size: 24px !important; 
+        margin: 10px 0;
+        padding: 0 10px;
+      }
+      .subtitle { 
+        font-size: 14px !important; 
+        padding: 0 10px;
+      }
+      .container { 
+        padding: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+      }
+      .message { 
+        font-size: 16px !important; 
+        padding: 0 10px;
+      }
+      .game-info { 
+        flex-direction: column; 
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .tops-container { 
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+      }
+      .card {
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+      }
+      .game-container {
+        height: 250px !important;
+        margin: 10px 0;
+      }
+      .game-title {
+        font-size: 20px !important;
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+        max-width: 100%;
+      }
+      .tops-container {
+        grid-template-columns: 1fr;
+      }
+      .game-container {
+        height: 300px;
+      }
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 20px;
       flex: 1;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-y: auto; /* Только вертикальный скролл при необходимости */
+      -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
     }
 
     .card {
       background: rgba(255,255,255,0.1);
       backdrop-filter: blur(10px);
-      border-radius: 24px;
+      border-radius: 20px;
       padding: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     video {
       width: 100%;
-      max-height: 70vh;
-      border-radius: 18px;
+      max-height: 50vh;
+      border-radius: 15px;
       background: black;
+      display: block;
     }
 
-    .message { margin-top: 16px; font-size: 18px; }
+    .message { 
+      margin-top: 15px; 
+      font-size: 18px; 
+      padding: 0 10px;
+    }
 
     .timer {
-      font-size: 22px;
-      margin-top: 12px;
+      font-size: 20px;
+      margin-top: 10px;
       letter-spacing: 1px;
+      padding: 0 10px;
     }
 
     .snowflake {
@@ -65,6 +143,7 @@
       pointer-events: none;
       animation: fall linear infinite;
       text-shadow: 0 0 5px rgba(255,255,255,0.8);
+      z-index: 9999;
     }
 
     @keyframes fall {
@@ -78,6 +157,7 @@
       border-radius: 50%;
       background: white;
       animation: explode 1s ease-out forwards;
+      pointer-events: none;
     }
 
     @keyframes explode {
@@ -89,33 +169,34 @@
 
     /* Стили для мини-игры */
     .game-section {
-      margin-top: 30px;
-      padding: 20px;
+      margin-top: 20px;
+      padding: 15px;
       background: rgba(0, 20, 40, 0.8);
-      border-radius: 20px;
+      border-radius: 15px;
     }
 
     .game-title {
-      font-size: 24px;
+      font-size: 22px;
       margin-bottom: 15px;
       color: #4fc3f7;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .game-container {
       position: relative;
       width: 100%;
-      height: 400px;
+      height: 350px;
       background: rgba(0, 10, 30, 0.7);
-      border-radius: 15px;
+      border-radius: 12px;
       overflow: hidden;
       margin: 0 auto;
-      border: 3px solid rgba(79, 195, 247, 0.5);
-      cursor: pointer;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+      border: 2px solid rgba(79, 195, 247, 0.5);
+      touch-action: none; /* Отключаем жесты браузера на игровом поле */
+      user-select: none;
     }
 
     #gameCanvas {
@@ -129,58 +210,63 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 15px;
-      padding: 0 10px;
+      margin: 15px 0;
+      padding: 0 5px;
+      flex-wrap: wrap;
     }
 
     .score-container, .lives-container {
       background: linear-gradient(135deg, rgba(79, 195, 247, 0.3), rgba(33, 150, 243, 0.3));
-      padding: 10px 25px;
-      border-radius: 50px;
-      font-size: 18px;
+      padding: 8px 15px;
+      border-radius: 25px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
-      border: 2px solid rgba(79, 195, 247, 0.5);
+      border: 1px solid rgba(79, 195, 247, 0.5);
+      margin: 5px;
     }
 
     .score-value {
       font-weight: bold;
       color: #4fc3f7;
-      font-size: 28px;
-      text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+      font-size: 24px;
+      text-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
     }
 
     .lives-value {
       font-weight: bold;
       color: #ff6b6b;
-      font-size: 28px;
-      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+      font-size: 24px;
+      text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
     }
 
     .game-controls {
       display: flex;
-      gap: 15px;
+      gap: 10px;
       margin-top: 15px;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .game-btn {
-      padding: 12px 30px;
+      padding: 10px 20px;
       border: none;
-      border-radius: 50px;
+      border-radius: 25px;
       background: linear-gradient(135deg, #4fc3f7, #2196f3);
       color: white;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+      box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
       font-weight: bold;
+      touch-action: manipulation;
+      min-width: 120px;
     }
 
     .game-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+      box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
     }
 
     .game-btn:active {
@@ -197,12 +283,13 @@
 
     .instructions {
       margin-top: 15px;
-      font-size: 14px;
+      font-size: 13px;
       color: #b0bec5;
-      padding: 12px;
+      padding: 10px;
       background: rgba(0,0,0,0.3);
-      border-radius: 10px;
+      border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.1);
+      line-height: 1.4;
     }
 
     .game-over {
@@ -211,56 +298,51 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: linear-gradient(135deg, rgba(0, 30, 60, 0.95), rgba(0, 20, 40, 0.95));
-      padding: 40px;
-      border-radius: 20px;
+      padding: 25px;
+      border-radius: 15px;
       text-align: center;
       display: none;
       z-index: 100;
-      border: 3px solid #4fc3f7;
-      box-shadow: 0 0 50px rgba(79, 195, 247, 0.7);
-      min-width: 300px;
+      border: 2px solid #4fc3f7;
+      box-shadow: 0 0 30px rgba(79, 195, 247, 0.7);
+      width: 85%;
+      max-width: 300px;
     }
 
     .game-over h3 {
       color: #ff6b6b;
-      font-size: 32px;
+      font-size: 24px;
       margin-bottom: 10px;
-      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
     }
 
     .final-score {
-      font-size: 48px;
+      font-size: 36px;
       color: #4fc3f7;
-      margin: 20px 0;
-      text-shadow: 0 0 15px rgba(79, 195, 247, 0.7);
+      margin: 15px 0;
     }
 
     /* Стили для топ-листов */
     .tops-container {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      gap: 15px;
       margin-top: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .tops-container {
-        grid-template-columns: 1fr;
-      }
     }
 
     .top-card {
       background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-      border-radius: 20px;
-      padding: 20px;
+      border-radius: 15px;
+      padding: 15px;
       text-align: left;
       transition: transform 0.3s, box-shadow 0.3s;
       border: 1px solid rgba(255,255,255,0.1);
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .top-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
 
     .top-card h3 {
@@ -268,10 +350,10 @@
       margin-top: 0;
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 22px;
-      border-bottom: 2px solid rgba(79, 195, 247, 0.3);
-      padding-bottom: 10px;
+      gap: 8px;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+      padding-bottom: 8px;
     }
 
     .top-list {
@@ -281,11 +363,11 @@
     }
 
     .top-item {
-      padding: 15px 0;
+      padding: 12px 0;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       display: flex;
       align-items: flex-start;
-      gap: 15px;
+      gap: 10px;
     }
 
     .top-item:last-child {
@@ -293,33 +375,34 @@
     }
 
     .item-number {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
       color: #ff6b6b;
-      min-width: 30px;
+      min-width: 25px;
     }
 
     .item-content h4 {
       margin: 0 0 5px 0;
       color: white;
-      font-size: 18px;
+      font-size: 16px;
+      line-height: 1.3;
     }
 
     .item-content p {
       margin: 0;
       color: #b0bec5;
-      font-size: 14px;
-      line-height: 1.5;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
     .rating {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 3px;
       background: rgba(255, 215, 0, 0.2);
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 11px;
       margin-top: 5px;
     }
 
@@ -329,17 +412,24 @@
 
     .music-note {
       color: #4fc3f7;
-      font-size: 20px;
+      font-size: 16px;
     }
 
     .gift-icon {
       color: #ff6b6b;
-      font-size: 20px;
+      font-size: 16px;
     }
 
     .game-icon {
       color: #4caf50;
-      font-size: 20px;
+      font-size: 16px;
+    }
+
+    footer {
+      margin-top: 20px;
+      padding: 15px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
     }
   </style>
 </head>
@@ -392,7 +482,7 @@
             <li class="top-item">
               <div class="item-number">3</div>
               <div class="item-content">
-                <h4>Один дома 2: Потерянный в Нью-Йорке</h4>
+                <h4>Один дома 2</h4>
                 <p>Продолжение приключений Кевина, на этот раз в большом городе.</p>
                 <div class="rating"><span class="gold">★★★★☆</span> 6.8/10 IMDb</div>
               </div>
@@ -409,23 +499,23 @@
               <div class="item-content">
                 <h4>"Last Christmas" - Wham!</h4>
                 <p>Самая популярная рождественская песня, ставшая классикой с 1984 года.</p>
-                <div class="music-note">🎶 Более 1.8 млрд прослушиваний на Spotify</div>
+                <div class="music-note">🎶 Более 1.8 млрд прослушиваний</div>
               </div>
             </li>
             <li class="top-item">
               <div class="item-number">2</div>
               <div class="item-content">
-                <h4>"All I Want for Christmas Is You" - Mariah Carey</h4>
-                <p>Хит, который ежегодно возглавляет чарты по всему миру.</p>
-                <div class="music-note">🎶 С более чем 1.2 млрд просмотров на YouTube</div>
+                <h4>"All I Want for Christmas"</h4>
+                <p>Mariah Carey - хит, который ежегодно возглавляет чарты.</p>
+                <div class="music-note">🎶 1.2 млрд просмотров на YouTube</div>
               </div>
             </li>
             <li class="top-item">
               <div class="item-number">3</div>
               <div class="item-content">
-                <h4>"Jingle Bell Rock" - Bobby Helms</h4>
-                <p>Весёлая рок-н-ролльная рождественская классика 1957 года.</p>
-                <div class="music-note">🎶 Звучит в десятках фильмов и сериалов</div>
+                <h4>"Jingle Bell Rock"</h4>
+                <p>Bobby Helms - весёлая рок-н-ролльная рождественская классика.</p>
+                <div class="music-note">🎶 Звучит в десятках фильмов</div>
               </div>
             </li>
           </ul>
@@ -438,25 +528,25 @@
             <li class="top-item">
               <div class="item-number">1</div>
               <div class="item-content">
-                <h4>Secret Santa (Тайный Санта)</h4>
-                <p>Традиционная игра с анонимным обменом подарками. Каждый дарит и получает подарок от тайного Санты.</p>
-                <div class="game-icon">👥 Идеально для компании друзей или коллег</div>
+                <h4>Secret Santa</h4>
+                <p>Традиционная игра с анонимным обменом подарками.</p>
+                <div class="game-icon">👥 Идеально для компании</div>
               </div>
             </li>
             <li class="top-item">
               <div class="item-number">2</div>
               <div class="item-content">
                 <h4>Новогодний крокодил</h4>
-                <p>Показывайте слова и фразы на новогоднюю тематику без слов!</p>
-                <div class="game-icon">🎭 Отлично подходит для семейного праздника</div>
+                <p>Показывайте слова на новогоднюю тематику без слов!</p>
+                <div class="game-icon">🎭 Для семейного праздника</div>
               </div>
             </li>
             <li class="top-item">
               <div class="item-number">3</div>
               <div class="item-content">
                 <h4>Поздравление по алфавиту</h4>
-                <p>Каждый гость говорит пожелание на следующую букву алфавита.</p>
-                <div class="game-icon">🔠 Весёлая игра для развития фантазии</div>
+                <p>Каждый гость говорит пожелание на следующую букву.</p>
+                <div class="game-icon">🔠 Развивает фантазию</div>
               </div>
             </li>
           </ul>
@@ -470,24 +560,24 @@
               <div class="item-number">1</div>
               <div class="item-content">
                 <h4>Персонализированные подарки</h4>
-                <p>Фотоальбомы, кружки с фото, именные украшения - подарки с душой.</p>
-                <div class="gift-icon">💝 Самый тёплый и запоминающийся подарок</div>
+                <p>Фотоальбомы, кружки с фото, именные украшения.</p>
+                <div class="gift-icon">💝 Запоминающийся подарок</div>
               </div>
             </li>
             <li class="top-item">
               <div class="item-number">2</div>
               <div class="item-content">
                 <h4>Опыт вместо вещей</h4>
-                <p>Билеты на концерт, сертификат на спа-процедуры, мастер-класс.</p>
-                <div class="gift-icon">✨ Подарок, который останется в памяти</div>
+                <p>Билеты на концерт, спа-процедуры, мастер-класс.</p>
+                <div class="gift-icon">✨ Остаётся в памяти</div>
               </div>
             </li>
             <li class="top-item">
               <div class="item-number">3</div>
               <div class="item-content">
                 <h4>Новогодний набор</h4>
-                <p>Корзина с деликатесами, чайный/кофейный набор, косметика.</p>
-                <div class="gift-icon">🍫 Практичный и всегда уместный презент</div>
+                <p>Корзина с деликатесами, чайный набор, косметика.</p>
+                <div class="gift-icon">🍫 Практичный презент</div>
               </div>
             </li>
           </ul>
@@ -512,7 +602,7 @@
         </div>
       </div>
       
-      <div class="game-container">
+      <div class="game-container" id="gameContainer">
         <canvas id="gameCanvas"></canvas>
         <div class="game-over" id="gameOver">
           <h3>Игра окончена!</h3>
@@ -524,14 +614,14 @@
       </div>
       
       <div class="game-controls">
-        <button class="game-btn" id="startBtn" onclick="startGame()">▶️ Начать игру</button>
+        <button class="game-btn" id="startBtn" onclick="startGame()">▶️ Начать</button>
         <button class="game-btn pause" id="pauseBtn" onclick="togglePause()" disabled>⏸️ Пауза</button>
         <button class="game-btn restart" onclick="restartGame()">🔄 Заново</button>
       </div>
       
       <div class="instructions">
-        Управление: двигайте мышкой или пальцем по игровому полю, чтобы ловить снежинки ❄️.
-        Каждая пойманная снежинка = 10 очков. Избегайте пропускать снежинки - теряете жизнь!
+        Управление: двигайте пальцем по игровому полю, чтобы ловить снежинки ❄️.
+        Каждая снежинка = 10 очков. Пропустите - потеряете жизнь!
       </div>
     </div>
 
@@ -539,25 +629,46 @@
   </div>
 
   <script>
+    // Отключаем стандартное поведение касания для всего сайта
+    document.addEventListener('touchmove', function(e) {
+      if (e.target.classList.contains('game-container') || 
+          e.target.id === 'gameCanvas' ||
+          e.target.classList.contains('game-btn')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    
+    // Отключаем контекстное меню на всем сайте
+    document.addEventListener('contextmenu', function(e) {
+      if (e.target.classList.contains('game-container') || 
+          e.target.id === 'gameCanvas') {
+        e.preventDefault();
+      }
+    });
+
     // Автоматическое включение фоновой музыки
     const music = document.getElementById('bgMusic');
     
     // Пытаемся включить музыку при загрузке страницы
     document.addEventListener('DOMContentLoaded', () => {
-      music.volume = 0.5;
+      music.volume = 0.3; // Тише для мобильных
       music.play().catch(error => {
         console.log("Автовоспроизведение заблокировано. Музыка включится при взаимодействии с сайтом.");
       });
       
       // Инициализация игры
       initGame();
+      resizeCanvas();
     });
     
     // Включаем музыку при любом взаимодействии пользователя
+    let audioInitialized = false;
     ['click', 'touchstart', 'keydown'].forEach(eventType => {
       document.addEventListener(eventType, () => {
-        if (music.paused) {
+        if (!audioInitialized && music.paused) {
+          music.volume = 0.3;
           music.play().catch(e => console.log("Не удалось включить музыку:", e));
+          audioInitialized = true;
         }
       }, { once: true });
     });
@@ -568,12 +679,12 @@
       s.className = 'snowflake';
       s.textContent = '❄';
       s.style.left = Math.random() * 100 + 'vw';
-      s.style.fontSize = 12 + Math.random() * 18 + 'px';
-      s.style.animationDuration = 5 + Math.random() * 5 + 's';
-      s.style.opacity = 0.7 + Math.random() * 0.3;
+      s.style.fontSize = 10 + Math.random() * 12 + 'px';
+      s.style.animationDuration = 3 + Math.random() * 4 + 's';
+      s.style.opacity = 0.5 + Math.random() * 0.3;
       document.body.appendChild(s);
-      setTimeout(() => s.remove(), 10000);
-    }, 200);
+      setTimeout(() => s.remove(), 7000);
+    }, 250);
 
     // ТАЙМЕР
     const timerEl = document.getElementById('timer');
@@ -584,7 +695,7 @@
       if (diff <= 0) {
         timerEl.textContent = '🎆 С НОВЫМ ГОДОМ! 🎆';
         startFireworks();
-        music.volume = 1.0;
+        music.volume = 0.5;
         music.play().catch(e => console.log("Не удалось включить музыку:", e));
         return;
       }
@@ -599,19 +710,19 @@
 
     // ФЕЙЕРВЕРК
     function startFireworks() {
-      for (let i = 0; i < 150; i++) {
+      for (let i = 0; i < 80; i++) {
         const f = document.createElement('div');
         f.className = 'firework';
         f.style.left = '50vw';
         f.style.top = '50vh';
-        f.style.setProperty('--x', (Math.random() - 0.5) * 400 + 'px');
-        f.style.setProperty('--y', (Math.random() - 0.5) * 400 + 'px');
+        f.style.setProperty('--x', (Math.random() - 0.5) * 200 + 'px');
+        f.style.setProperty('--y', (Math.random() - 0.5) * 200 + 'px');
         document.body.appendChild(f);
         setTimeout(() => f.remove(), 1000);
       }
     }
 
-    // МИНИ-ИГРА: ЛОВИ СНЕЖИНКИ (Canvas версия)
+    // МИНИ-ИГРА: ЛОВИ СНЕЖИНКИ
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreEl = document.getElementById('score');
@@ -624,11 +735,22 @@
 
     // Установка размеров canvas
     function resizeCanvas() {
-      canvas.width = gameContainer.clientWidth;
-      canvas.height = gameContainer.clientHeight;
+      const rect = gameContainer.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    
+    // Обработка ресайза
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeCanvas, 100);
+    });
+    
+    // Обработка ориентации устройства
+    window.addEventListener('orientationchange', function() {
+      setTimeout(resizeCanvas, 100);
+    });
 
     // Переменные игры
     let gameActive = false;
@@ -637,28 +759,28 @@
     let lives = 3;
     let bucketX = canvas.width / 2 - 40;
     const bucketWidth = 80;
-    const bucketHeight = 60;
+    const bucketHeight = 50;
     
     // Снежинки
     let snowflakes = [];
     let lastSnowflakeTime = 0;
-    let snowflakeInterval = 600; // мс между снежинками
+    let snowflakeInterval = 800; // мс между снежинками
     let animationId = null;
     let lastTime = 0;
+    
+    // Для мобильного управления
+    let isTouching = false;
+    let touchStartX = 0;
 
     // Инициализация игры
     function initGame() {
-      // Обработка движения мыши
-      canvas.addEventListener('mousemove', moveBucket);
-      canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        bucketX = touch.clientX - rect.left - bucketWidth / 2;
-        // Ограничение движения
-        if (bucketX < 0) bucketX = 0;
-        if (bucketX > canvas.width - bucketWidth) bucketX = canvas.width - bucketWidth;
-      }, { passive: false });
+      // Обработка мыши
+      canvas.addEventListener('mousemove', handleMouseMove);
+      
+      // Обработка касаний для мобильных
+      canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+      canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+      canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
       
       // Обработка клика для паузы
       canvas.addEventListener('click', () => {
@@ -666,16 +788,40 @@
       });
     }
 
-    // Движение ведра
-    function moveBucket(e) {
+    // Обработка мыши
+    function handleMouseMove(e) {
       if (!gameActive || gamePaused) return;
       
       const rect = canvas.getBoundingClientRect();
-      bucketX = e.clientX - rect.left - bucketWidth / 2;
+      const x = e.clientX - rect.left - bucketWidth / 2;
+      bucketX = Math.max(0, Math.min(x, canvas.width - bucketWidth));
+    }
+
+    // Обработка касаний
+    function handleTouchStart(e) {
+      e.preventDefault();
+      isTouching = true;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      touchStartX = touch.clientX - rect.left;
+      bucketX = touchStartX - bucketWidth / 2;
+      bucketX = Math.max(0, Math.min(bucketX, canvas.width - bucketWidth));
+    }
+
+    function handleTouchMove(e) {
+      e.preventDefault();
+      if (!isTouching || !gameActive || gamePaused) return;
       
-      // Ограничение движения
-      if (bucketX < 0) bucketX = 0;
-      if (bucketX > canvas.width - bucketWidth) bucketX = canvas.width - bucketWidth;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const touchX = touch.clientX - rect.left;
+      bucketX = touchX - bucketWidth / 2;
+      bucketX = Math.max(0, Math.min(bucketX, canvas.width - bucketWidth));
+    }
+
+    function handleTouchEnd(e) {
+      e.preventDefault();
+      isTouching = false;
     }
 
     // Класс снежинки
@@ -684,10 +830,10 @@
         this.x = x;
         this.y = -size;
         this.size = size;
-        this.speed = 2 + Math.random() * 3;
+        this.speed = 1.5 + Math.random() * 2;
         this.opacity = 0.8 + Math.random() * 0.2;
-        this.wobble = Math.random() * 0.5;
-        this.wobbleSpeed = 0.05 + Math.random() * 0.05;
+        this.wobble = Math.random() * 0.3;
+        this.wobbleSpeed = 0.03 + Math.random() * 0.03;
         this.wobbleOffset = Math.random() * Math.PI * 2;
       }
       
@@ -695,7 +841,6 @@
         this.y += this.speed * (deltaTime / 16);
         this.x += Math.sin(Date.now() * this.wobbleSpeed + this.wobbleOffset) * this.wobble;
         
-        // Ограничение по горизонтали
         if (this.x < 0) this.x = 0;
         if (this.x > canvas.width) this.x = canvas.width;
         
@@ -707,26 +852,11 @@
         ctx.globalAlpha = this.opacity;
         ctx.fillStyle = '#ffffff';
         ctx.shadowColor = '#4fc3f7';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+        ctx.shadowBlur = 8;
         
-        // Рисуем снежинку (шестиугольник)
+        // Простая снежинка (круг)
         ctx.beginPath();
-        const radius = this.size / 2;
-        for (let i = 0; i < 6; i++) {
-          const angle = (Math.PI / 3) * i;
-          const x = this.x + Math.cos(angle) * radius;
-          const y = this.y + Math.sin(angle) * radius;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.fill();
-        
-        // Центр снежинки
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, radius * 0.4, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
         ctx.fill();
         
         ctx.restore();
@@ -749,14 +879,14 @@
       // Основное ведро
       ctx.fillStyle = '#2196f3';
       ctx.shadowColor = '#0d47a1';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 5;
+      ctx.shadowBlur = 5;
+      ctx.shadowOffsetY = 3;
       
       ctx.beginPath();
       ctx.moveTo(bucketX, canvas.height);
       ctx.lineTo(bucketX + bucketWidth, canvas.height);
-      ctx.lineTo(bucketX + bucketWidth - 20, canvas.height - bucketHeight);
-      ctx.lineTo(bucketX + 20, canvas.height - bucketHeight);
+      ctx.lineTo(bucketX + bucketWidth - 15, canvas.height - bucketHeight);
+      ctx.lineTo(bucketX + 15, canvas.height - bucketHeight);
       ctx.closePath();
       ctx.fill();
       
@@ -766,25 +896,15 @@
       ctx.ellipse(
         bucketX + bucketWidth / 2,
         canvas.height - bucketHeight,
-        bucketWidth / 2 - 10,
-        10,
+        bucketWidth / 2 - 8,
+        8,
         0, 0, Math.PI * 2
       );
       ctx.fill();
       
-      // Внутренность ведра
-      ctx.fillStyle = '#64b5f6';
-      ctx.beginPath();
-      ctx.moveTo(bucketX + 20, canvas.height - bucketHeight);
-      ctx.lineTo(bucketX + bucketWidth - 20, canvas.height - bucketHeight);
-      ctx.lineTo(bucketX + bucketWidth - 15, canvas.height - 15);
-      ctx.lineTo(bucketX + 15, canvas.height - 15);
-      ctx.closePath();
-      ctx.fill();
-      
       // Обводка
       ctx.strokeStyle = '#bbdefb';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.stroke();
       
       ctx.restore();
@@ -792,20 +912,18 @@
 
     // Частицы
     function createParticles(x, y, count) {
+      if (!window.particles) window.particles = [];
+      
       for (let i = 0; i < count; i++) {
-        const particle = {
+        window.particles.push({
           x: x,
           y: y,
-          vx: (Math.random() - 0.5) * 8,
-          vy: (Math.random() - 0.5) * 8,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
           life: 1.0,
-          size: 3 + Math.random() * 4,
+          size: 2 + Math.random() * 3,
           color: `hsl(${200 + Math.random() * 40}, 100%, 70%)`
-        };
-        
-        // Временное хранение частиц
-        if (!window.particles) window.particles = [];
-        window.particles.push(particle);
+        });
       }
     }
 
@@ -817,8 +935,8 @@
         const p = window.particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.1; // гравитация
-        p.life -= 0.02;
+        p.vy += 0.08; // гравитация
+        p.life -= 0.03;
         
         if (p.life <= 0) {
           window.particles.splice(i, 1);
@@ -853,13 +971,13 @@
         
         // Создание новых снежинок
         if (timestamp - lastSnowflakeTime > snowflakeInterval) {
-          const size = 15 + Math.random() * 15;
+          const size = 12 + Math.random() * 12;
           snowflakes.push(new Snowflake(Math.random() * (canvas.width - size * 2) + size, size));
           lastSnowflakeTime = timestamp;
           
           // Увеличение сложности
           if (score > 0 && score % 100 === 0) {
-            snowflakeInterval = Math.max(300, 600 - Math.floor(score / 100) * 50);
+            snowflakeInterval = Math.max(400, 800 - Math.floor(score / 100) * 60);
           }
         }
         
@@ -885,7 +1003,7 @@
             snowflakes.splice(i, 1);
             score += 10;
             scoreEl.textContent = score;
-            createParticles(sf.x, sf.y, 8);
+            createParticles(sf.x, sf.y, 6);
             continue;
           }
           
@@ -918,7 +1036,7 @@
       snowflakes = [];
       window.particles = [];
       lastSnowflakeTime = 0;
-      snowflakeInterval = 600;
+      snowflakeInterval = 800;
       
       scoreEl.textContent = score;
       livesEl.textContent = lives;
